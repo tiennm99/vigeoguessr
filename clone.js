@@ -29,7 +29,7 @@ function initialize() {
   check_count = 0;
   disableButton('check');
   if (accumulated_distance == 0) {
-    document.getElementById("totaldistance").innerHTML = 'Round Score: 0 Miles';
+    // document.getElementById("totaldistance").innerHTML = 'Round Score: 0 Miles';
   }
   document.getElementById("location").innerHTML = ' ';
   document.getElementById("distance").innerHTML = ' ';
