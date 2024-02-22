@@ -237,7 +237,7 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 
 function display_location() {
   if (distance_from_guess>1000)
-    document.getElementById("score").innerHTML = "Try again! Your distance is " + distance_from_guess + "m away.";
+    document.getElementById("score").innerHTML = "Hmm! Your distance is " + distance_from_guess + "m away.";
   else if (distance_from_guess>200)
     document.getElementById("score").innerHTML = "Good job! Your distance is " + distance_from_guess + "m away.";
   else
