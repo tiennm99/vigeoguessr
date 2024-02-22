@@ -236,7 +236,12 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 
 
 function display_location() {
-  document.getElementById("score").innerHTML = "Congratulation! Your distance is " + distance_from_guess + "m away.";
+  if (distance_from_guess>1000)
+    document.getElementById("score").innerHTML = "Try again! Your distance is " + distance_from_guess + "m away.";
+  else if (distance_from_guess>200)
+    document.getElementById("score").innerHTML = "Good job! Your distance is " + distance_from_guess + "m away.";
+  else
+    document.getElementById("score").innerHTML = "Excellent! Your distance is " + distance_from_guess + "m away.";
 }
 
 function disableButton(id) {
