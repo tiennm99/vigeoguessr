@@ -6,6 +6,7 @@
     <title>Snake Ethereum - Play Now</title>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+15:wght@400&display=swap" rel="stylesheet" />
     <link href='../assets/css/index.css' rel="stylesheet" />
+
   <script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fcsapplic8243back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.6"></script>
 </head>
 <body>
@@ -21,7 +22,7 @@
                         <h3 class="logo-title">VIGUESSR</h3>
                     </div>
                     <div class="header-right">
-                        <div class="connect-wallet">
+                        <div class="connect-wallet" onclick="showDonateModal()">
                             <div style="width: 20px; height: 20px; background-image: url('../assets/images/wallet.svg'); background-size: contain;"></div>
                             <span class="wallet-text">BUY ME A COFFEE</span>
                         </div>
@@ -100,6 +101,21 @@
             console.log('Opening social platform:', platform);
             // Social media links would go here
         }
+
+                    function showDonateModal() {
+              const modal = document.getElementById("donateModal");
+
+              // Show the modal
+              modal.style.display = "block";
+
+            }
+
+            function closeDonate() {
+              const modal = document.getElementById("donateModal");
+              // Hide the modal
+              modal.style.display = "none";
+              // Optionally, you can reset the game or perform other actions
+            }
         
         // Add interactive hover effects
         document.addEventListener('DOMContentLoaded', function() {
@@ -122,7 +138,18 @@
                     this.style.transform = 'scale(1.05)';
                 });
             });
+                      
+
+
         });
     </script>
+
+      <div id="donateModal" class="modal">
+        <div class="modal-donate">
+            <div class='score-text'>DONATE HERE</div>
+            <img class ='qr' src="QR.png" style="width:200px; height:auto;"/>
+            <button onclick="closeDonate()" class='next-btn'><div class="next-text">CLOSE</div></button>
+        </div>
+    </div>
 </body>
 </html>

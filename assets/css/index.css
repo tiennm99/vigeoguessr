@@ -8,6 +8,51 @@
         .bar-icon {
             height: 20px;
         }
+
+        
+
+.next-btn {
+    margin-top: 10px;
+    background: linear-gradient(135deg, #057f6d, #024d42);
+    border: #05A38C 5px solid;
+    border-radius: 12px;
+    padding: 12px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-width: 200px;
+    width: 100%;
+}
+
+.next-text {
+    font-family: 'Jersey 15', cursive;
+    font-size: 16px;
+    line-height: 16px;
+    color: #e6f4e6;
+}
+
+        .modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+        .modal-donate {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            z-index: 10000;
+        }       
         
         body {
             font-family: 'Courier', monospace;
