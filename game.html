@@ -5,7 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Snake Ethereum - Play Now</title>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+15:wght@400&display=swap" rel="stylesheet" />
-    <link href='../assets/css/index.css' rel="stylesheet" />
+    <link href='../assets/css/game.css' rel="stylesheet" />
+
+    <script src="game.js" type="text/javascript"></script>
+
+        <!-- Leaflet for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Photo Sphere Viewer for 360 images -->
+    <script src="https://unpkg.com/three@0.152.0/build/three.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@photo-sphere-viewer/core@5.7.4/index.css" />
+    <script src="https://unpkg.com/@photo-sphere-viewer/core@5.7.4/index.js"></script></script>
+
+    
+
   <script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fcsapplic8243back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.6"></script>
 </head>
 <body>
@@ -15,13 +29,12 @@
         <div class="content-wrapper">
             <div class="gradient-overlay">
                 <header class="header">
-
                     <div class="header-center">
                         <div class="logo-icon" style="background-image: url('logo.png');"></div>
                         <h3 class="logo-title">VIGUESSR</h3>
                     </div>
                     <div class="header-right">
-                        <div class="connect-wallet">
+                        <div class="connect-wallet" onclick="showDonateModal()">
                             <div style="width: 20px; height: 20px; background-image: url('../assets/images/wallet.svg'); background-size: contain;"></div>
                             <span class="wallet-text">BUY ME A COFFEE</span>
                         </div>
@@ -31,44 +44,19 @@
                 
                 <div class="game-section">
                     <div class="score-header">
-                        <span class="score-text">WELCOME TO VI GUESSR</span>
+                        <button class="back-btn" onclick="goBack()"> 
+                            <div class="diamond-icon" style="background-image: url('../assets/images/back.svg');"></div>
+                        </button>
                     </div>
-                    
-                    <div class="play-section">
-                        <div class="play-title-row">
-                            <div class="diamond-icon" style="background-image: url('../assets/images/img_objects.png');"></div>
-                            <div class="diamond-icon" style="background-image: url('../assets/images/img_objects.png');"></div>
-                            <h1 class="play-title">PLAY NOW</h1>
-                            <div class="diamond-icon" style="background-image: url('../assets/images/img_objects.png');"></div>
-                            <div class="diamond-icon" style="background-image: url('../assets/images/img_objects.png');"></div>
-                        </div>
-                    </div>
-                    
                     <div class="game-content">
-                        <div class="pano">
-                            <h2 class="how-title">HOW 2 PLAY</h2>
-                            
-                            <div class="instruction-list">
-                                <p class="instruction">1. Choose your city</p>
-                                <p class="instruction">2. Guess the location of the picture as accurately as possible</p>
-                            </div>
+                        <div class="pano" id="pano">
                         </div>
                         
                         <div class="right-panel">
-                           
-                            <button class="bridge-btn" onclick="startGame('HN')">
-                                <div class="bridge-text">HA NOI</div>
-                            </button>
-                            <button class="bridge-btn" onclick="startGame('TPHCM')">
-                                <div class="bridge-text">TP. HO CHI MINH</div>
-                            </button>
-                            <button class="bridge-btn" onclick="startGame('HP')">
-                                <div class="bridge-text">HAI PHONG</div>
-                            </button>
-                            <button class="bridge-btn" onclick="startGame('ND')">
-                                <div class="bridge-text">NAM DINH</div>
-                            </button>
-
+                            <div class="disclaimer" id="map"></div>
+                            <button class="check-btn" id="check" disabled onclick="check()">
+                                <div class="check-text">SUBMIT</div>
+                            </button>                      
                         </div>
                     </div>
                 </div>
@@ -76,8 +64,11 @@
         </div>
         
         
-
     </div>
+
+
+
+
     
     <script>
         function startGame(location ) {
@@ -122,7 +113,44 @@
                     this.style.transform = 'scale(1.05)';
                 });
             });
+
+            // Close modal when clicking outside of it
+            const modal = document.getElementById('resultModal');
+            if (modal) {
+                modal.addEventListener('click', function(event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+
+            const donateModal = document.getElementById('donateModal');
+            if (donateModal) {
+                donateModal.addEventListener('click', function(event) {
+                    if (event.target === donateModal) {
+                        donateModal.style.display = 'none';
+                    }
+                });
+            }
         });
     </script>
+
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <div class='score-text'>RESULT</div>
+            <span class='distance-text' id="distance-guess">Your Score</span>
+            <div class='container' id="result" ></div>
+            <p id="resultText">You were 0 km away!</p>
+            <button onclick="nextRound()" class='next-btn'><div class="next-text">NEXT ROUND</div></button>
+        </div>
+    </div>
+
+    <div id="donateModal" class="modal">
+        <div class="modal-donate">
+            <div class='score-text'>DONATE HERE</div>
+            <img class ='qr' src="QR.png" style="width:120px; height:auto;"/>
+            <button onclick="closeDonate()" class='next-btn'><div class="next-text">CLOSE</div></button>
+        </div>
+    </div>
 </body>
 </html>
