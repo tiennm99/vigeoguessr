@@ -1,1 +1,398 @@
-'use strict';const _0x4ac836=_0x42cc;(function(_0x14faf7,_0xf26a0c){const _0x5c878e=_0x42cc,_0x51f13c=_0x14faf7();while(!![]){try{const _0x253d07=-parseInt(_0x5c878e(0x1b9))/0x1+-parseInt(_0x5c878e(0x1fc))/0x2+-parseInt(_0x5c878e(0x1cd))/0x3+parseInt(_0x5c878e(0x1c0))/0x4*(-parseInt(_0x5c878e(0x1c4))/0x5)+parseInt(_0x5c878e(0x1e1))/0x6*(parseInt(_0x5c878e(0x1c2))/0x7)+-parseInt(_0x5c878e(0x1fb))/0x8+parseInt(_0x5c878e(0x1b5))/0x9;if(_0x253d07===_0xf26a0c)break;else _0x51f13c['push'](_0x51f13c['shift']());}catch(_0x25b5de){_0x51f13c['push'](_0x51f13c['shift']());}}}(_0x1319,0x2021c));var map,resultmap,markers=[],guess_coordinates=[],true_location=[],accumulated_distance=0x0,current_name='',distance_from_guess=[],check_count=0x0,choiceLocation='HN';const boundingBoxVN={'HN':[105.77,20.96,105.88,21.05,0.003],'TPHCM':[106.62,10.71,106.75,10.83,0.005],'HP':[106.65,20.8,106.75,20.9,0.05],'ND':[0x6a,20.35,106.25,20.5,0.005],'DN':[108.17,0x10,108.25,16.1,0.005]};var minLat=boundingBoxVN[choiceLocation][0x1],maxLat=boundingBoxVN[choiceLocation][0x3],minLong=boundingBoxVN[choiceLocation][0x0],maxLong=boundingBoxVN[choiceLocation][0x2],delta=boundingBoxVN[choiceLocation][0x4];const accessToken='MLY|24113623194974280|5bf83fa202912f1cc3210b2cf968fb65';function _0x42cc(_0x2cac5b,_0x461784){const _0x1319a3=_0x1319();return _0x42cc=function(_0x42cc4e,_0xe1b53d){_0x42cc4e=_0x42cc4e-0x1ac;let _0x455e37=_0x1319a3[_0x42cc4e];return _0x455e37;},_0x42cc(_0x2cac5b,_0x461784);}async function getRandomMapillaryImage(){const _0x2e1531=_0x42cc,_0x28efb2=Math[_0x2e1531(0x20f)]()*(maxLat-minLat)+minLat,_0x553355=Math[_0x2e1531(0x20f)]()*(maxLong-minLong)+minLong,_0x339a28=[(_0x553355-delta)[_0x2e1531(0x20b)](0x4),(_0x28efb2-delta)[_0x2e1531(0x20b)](0x4),(_0x553355+delta)['toFixed'](0x4),(_0x28efb2+delta)[_0x2e1531(0x20b)](0x4)][_0x2e1531(0x209)](','),_0x3f6cb8='https://graph.mapillary.com/images?access_token='+accessToken+_0x2e1531(0x1c9)+_0x339a28+'&is_pano=true';try{console[_0x2e1531(0x1bb)](_0x2e1531(0x1c3));const _0x2fc39d=await fetch(_0x3f6cb8),_0x4bd2ac=await _0x2fc39d[_0x2e1531(0x1f6)]();if(_0x4bd2ac[_0x2e1531(0x1ca)]&&_0x4bd2ac[_0x2e1531(0x1ca)]['length']>0x0){const _0x32e6d5=_0x4bd2ac[_0x2e1531(0x1ca)][_0x2e1531(0x1d2)](_0x14b241=>_0x14b241['is_pano']),_0x5caa8d=_0x32e6d5[_0x2e1531(0x1cc)]>0x0?_0x32e6d5[Math[_0x2e1531(0x1e0)](Math[_0x2e1531(0x20f)]()*_0x32e6d5[_0x2e1531(0x1cc)])]:_0x4bd2ac[_0x2e1531(0x1ca)][0x0];return console[_0x2e1531(0x1bb)]('Image\x20fetched\x20successfully'),{'lat':_0x5caa8d['geometry'][_0x2e1531(0x1b8)][0x1],'lng':_0x5caa8d[_0x2e1531(0x1f3)]['coordinates'][0x0],'url':_0x5caa8d[_0x2e1531(0x1ff)],'id':_0x5caa8d['id'],'isPano':_0x5caa8d['is_pano']||![]};}else return console['log'](_0x2e1531(0x1f0)),getRandomMapillaryImage();}catch(_0x3376d0){console[_0x2e1531(0x1d0)](_0x2e1531(0x1e3),_0x3376d0),document[_0x2e1531(0x20a)]('pano')[_0x2e1531(0x208)]=_0x2e1531(0x1d9),setTimeout(()=>getRandomMapillaryImage(),0x7d0);}}function checkLibrariesLoaded(){return new Promise(_0x28a7b2=>{const _0x42085f=setInterval(()=>{const _0x98b549=_0x42cc;window['L']&&window[_0x98b549(0x1b4)]&&(clearInterval(_0x42085f),_0x28a7b2());},0x64);});}function showLoading(){const _0x30dbfd=_0x42cc;document[_0x30dbfd(0x20a)](_0x30dbfd(0x1d7))[_0x30dbfd(0x208)]=_0x30dbfd(0x201);if(!document[_0x30dbfd(0x20a)]('loading-styles')){const _0x407d5a=document[_0x30dbfd(0x1c8)](_0x30dbfd(0x1f5));_0x407d5a['id']=_0x30dbfd(0x1e6),_0x407d5a[_0x30dbfd(0x1f7)]=_0x30dbfd(0x1e7),document['head'][_0x30dbfd(0x1c5)](_0x407d5a);}}function hideLoading(){const _0x4fb157=_0x42cc,_0x54f6fd=document['getElementById']('pano');_0x54f6fd&&_0x54f6fd[_0x4fb157(0x208)][_0x4fb157(0x1dc)]('Loading\x20image...')&&(_0x54f6fd[_0x4fb157(0x208)]='');}function initialize(){const _0x2c93f6=_0x42cc;check_count=0x0,disableButton(_0x2c93f6(0x202)),showLoading(),getRandomMapillaryImage()[_0x2c93f6(0x1ce)](_0x368947=>{const _0xbec09a=_0x2c93f6;if(!_0x368947)return location['reload']();true_location=[_0x368947['lat'],_0x368947[_0xbec09a(0x1ee)]],current_name=_0xbec09a(0x1ae),document['getElementById'](_0xbec09a(0x1d7))[_0xbec09a(0x208)]='';try{if(window[_0xbec09a(0x1b4)]&&window[_0xbec09a(0x1b4)][_0xbec09a(0x1ba)]){hideLoading();const _0xc9c77b=new PhotoSphereViewer['Viewer']({'container':document[_0xbec09a(0x20a)](_0xbec09a(0x1d7)),'panorama':_0x368947[_0xbec09a(0x1d4)],'loadingImg':null,'defaultYaw':0x0,'defaultZoomLvl':-0x60,'navbar':['zoom',_0xbec09a(0x1e9)],'mousewheel':![],'touchmoveTwoFingers':!![]});_0xc9c77b['addEventListener'](_0xbec09a(0x204),()=>{const _0x218bee=_0xbec09a;console[_0x218bee(0x1bb)](_0x218bee(0x1be));}),_0xc9c77b[_0xbec09a(0x1b7)](_0xbec09a(0x210),()=>{const _0x217d5d=_0xbec09a;console['log'](_0x217d5d(0x1fa));}),_0xc9c77b[_0xbec09a(0x1b7)](_0xbec09a(0x1d8),_0x429d45=>{const _0x4f4d3b=_0xbec09a;console[_0x4f4d3b(0x1d0)](_0x4f4d3b(0x1c7),_0x429d45),hideLoading(),document[_0x4f4d3b(0x20a)](_0x4f4d3b(0x1d7))[_0x4f4d3b(0x208)]=_0x4f4d3b(0x200)+_0x368947[_0x4f4d3b(0x1d4)]+_0x4f4d3b(0x1db);});}else console[_0xbec09a(0x1d3)](_0xbec09a(0x1ea)),hideLoading(),document['getElementById'](_0xbec09a(0x1d7))[_0xbec09a(0x208)]=_0xbec09a(0x200)+_0x368947[_0xbec09a(0x1d4)]+'\x22\x20style=\x22width:100%;\x20height:100%;\x20object-fit:cover;\x20border-radius:10px;\x22\x20/>';}catch(_0x77cbeb){console[_0xbec09a(0x1d0)]('Error\x20initializing\x20Photo\x20Sphere\x20Viewer:',_0x77cbeb),hideLoading(),document['getElementById']('pano')['innerHTML']=_0xbec09a(0x200)+_0x368947[_0xbec09a(0x1d4)]+'\x22\x20style=\x22width:100%;\x20height:100%;\x20object-fit:cover;\x20border-radius:10px;\x22\x20/>';}map=L[_0xbec09a(0x211)](_0xbec09a(0x211))[_0xbec09a(0x203)]([(minLat+maxLat)/0x2,(minLong+maxLong)/0x2],0xa),L[_0xbec09a(0x1bd)](_0xbec09a(0x206),{'maxZoom':0x13})[_0xbec09a(0x1f2)](map),map['on']('click',function(_0x16f42b){const _0x14c0b0=_0xbec09a;deleteMarkers(),guess_coordinates=[_0x16f42b['latlng']['lat'],_0x16f42b[_0x14c0b0(0x1b3)][_0x14c0b0(0x1ee)]];const _0x2492c4=L[_0x14c0b0(0x1d1)](_0x16f42b[_0x14c0b0(0x1b3)])[_0x14c0b0(0x1f2)](map);markers[_0x14c0b0(0x1ac)](_0x2492c4),check_count===0x0&&(enableButton(_0x14c0b0(0x202)),check_count+=0x1);});})['catch'](_0x5439fe=>{const _0x3550af=_0x2c93f6;console['error']('Error\x20in\x20initialize\x20function:',_0x5439fe),document['getElementById'](_0x3550af(0x1d7))[_0x3550af(0x208)]=_0x3550af(0x1cf);});}function clearMarkers(){const _0x1a8f24=_0x42cc;for(let _0x3808f8=0x0;_0x3808f8<markers[_0x1a8f24(0x1cc)];_0x3808f8++){map[_0x1a8f24(0x1b2)](markers[_0x3808f8]);}markers=[];}function deleteMarkers(){clearMarkers();}function continueGame(){const _0x17a609=_0x42cc;var _0x28e09e=new bootstrap['Modal'](document[_0x17a609(0x20a)](_0x17a609(0x1d6)));_0x28e09e[_0x17a609(0x1fe)](),location[_0x17a609(0x1ad)]();}function check(){distance_from_guess=[];var _0x476fe8=distance(guess_coordinates[0x0],guess_coordinates[0x1],true_location[0x0],true_location[0x1],'M');accumulated_distance+=parseFloat(_0x476fe8),distance_from_guess=_0x476fe8,showResultModal(distance_from_guess),disableButton('check');}function distance(_0x477e9b,_0xbe3d7e,_0xbc47f,_0x240ea8,_0x543af8){const _0x1b87f5=_0x42cc;if(_0x477e9b==_0xbc47f&&_0xbe3d7e==_0x240ea8)return 0x0;else{var _0xa23d7=Math['PI']*_0x477e9b/0xb4,_0x167b9a=Math['PI']*_0xbc47f/0xb4,_0x598bcb=_0xbe3d7e-_0x240ea8,_0xec0557=Math['PI']*_0x598bcb/0xb4,_0x88c0e0=Math[_0x1b87f5(0x1de)](_0xa23d7)*Math[_0x1b87f5(0x1de)](_0x167b9a)+Math[_0x1b87f5(0x1e2)](_0xa23d7)*Math[_0x1b87f5(0x1e2)](_0x167b9a)*Math[_0x1b87f5(0x1e2)](_0xec0557);if(_0x88c0e0>0x1)_0x88c0e0=0x1;_0x88c0e0=Math['acos'](_0x88c0e0),_0x88c0e0=_0x88c0e0*0xb4/Math['PI'],_0x88c0e0=_0x88c0e0*0x3c*1.1515;if(_0x543af8=='K')_0x88c0e0=_0x88c0e0*1.609344;if(_0x543af8=='N')_0x88c0e0=_0x88c0e0*0.8684;return _0x88c0e0=_0x88c0e0*1609.34,_0x88c0e0[_0x1b87f5(0x20b)](0x1);}}function display_location(){const _0x2ea798=_0x42cc,_0x3ed7e7=document[_0x2ea798(0x20a)](_0x2ea798(0x1cb));if(distance_from_guess>0x3e8)_0x3ed7e7[_0x2ea798(0x208)]=_0x2ea798(0x207)+distance_from_guess+_0x2ea798(0x1bf);else{if(distance_from_guess>0xc8)_0x3ed7e7[_0x2ea798(0x208)]=_0x2ea798(0x212)+distance_from_guess+_0x2ea798(0x1bf);else _0x3ed7e7['innerHTML']=_0x2ea798(0x1af)+distance_from_guess+'m\x20away.';}}function disableButton(_0x252c89){const _0x44e35c=_0x42cc;document[_0x44e35c(0x20a)](_0x252c89)[_0x44e35c(0x1e5)]=!![];}function enableButton(_0x4da5b6){const _0x203162=_0x42cc;document[_0x203162(0x20a)](_0x4da5b6)[_0x203162(0x1e5)]=![];}function _0x1319(){const _0xc9a65b=['addTo','geometry','distance-guess','style','json','textContent','search','get','Panorama\x20image\x20loaded','593104mBgfCq','45130uyFFUR','none','hide','thumb_original_url','<img\x20src=\x22','\x0a\x20\x20\x20\x20<div\x20style=\x22width:100%;\x20height:400px;\x20display:flex;\x20justify-content:center;\x20align-items:center;\x20\x22>\x0a\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22border:\x204px\x20solid\x20#f3f3f3;\x20border-top:\x204px\x20solid\x20#3498db;\x20border-radius:\x2050%;\x20width:\x2040px;\x20height:\x2040px;\x20animation:\x20spin\x202s\x20linear\x20infinite;\x20margin:\x200\x20auto\x2015px;\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22color:\x20#666;\x20font-size:\x2016px;\x22>Loading\x20image...</div>\x0a\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20</div>\x0a\x20\x20','check','setView','ready','https://maps.google.com/mapfiles/ms/icons/red-dot.png','https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png','Hmm!\x20Your\x20distance\x20is\x20','innerHTML','join','getElementById','toFixed','getBounds','result','icon','random','panorama-loaded','map','Good\x20job!\x20Your\x20distance\x20is\x20','push','reload','VIET\x20NAM','Excellent!\x20Your\x20distance\x20is\x20','\x20KM','invalidateSize','removeLayer','latlng','PhotoSphereViewer','4055445rnLyAx','bindPopup','addEventListener','coordinates','160209FBrPPA','Viewer','log','donateModal','tileLayer','Photo\x20Sphere\x20Viewer\x20loaded\x20successfully','m\x20away.','4JXYewi','block','135093Dbbglw','Fetching\x20panoramic\x20image...','400375ObXkLY','appendChild','featureGroup','Error\x20loading\x20panorama:','createElement','&fields=id,thumb_original_url,geometry,is_pano&limit=3&bbox=','data','score','length','177606qZFMDu','then','\x0a\x20\x20\x20\x20\x20\x20<div\x20style=\x22width:100%;\x20height:400px;\x20display:flex;\x20justify-content:center;\x20align-items:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:center;\x20color:\x20#e74c3c;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:\x2018px;\x20margin-bottom:\x2010px;\x22>⚠️\x20Failed\x20to\x20load</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22location.reload()\x22\x20style=\x22padding:\x208px\x2016px;\x20background:\x20#3498db;\x20color:\x20white;\x20border:\x20none;\x20border-radius:\x205px;\x20cursor:\x20pointer;\x22>Retry</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20','error','marker','filter','warn','url','Excellent!','resultModal','pano','panorama-error','\x0a\x20\x20\x20\x20\x20\x20<div\x20style=\x22width:100%;\x20height:400px;\x20display:flex;\x20justify-content:center;\x20align-items:center;\x20\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22text-align:center;\x20color:\x20#e74c3c;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:\x2018px;\x20margin-bottom:\x2010px;\x22>⚠️\x20Error\x20loading\x20image</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22font-size:\x2014px;\x22>Retrying...</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20','location','\x22\x20style=\x22width:100%;\x20height:100%;\x20object-fit:cover;\x20border-radius:10px;\x22\x20/>','includes','pad','sin','display','floor','24GWpPLq','cos','Error\x20fetching\x20image:','polyline','disabled','loading-styles','\x0a\x20\x20\x20\x20\x20\x20@keyframes\x20spin\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x200%\x20{\x20transform:\x20rotate(0deg);\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20100%\x20{\x20transform:\x20rotate(360deg);\x20}\x0a\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20','href','fullscreen','PhotoSphereViewer\x20not\x20available,\x20using\x20fallback\x20image','fitBounds','https://maps.google.com/mapfiles/ms/icons/green-dot.png','onload','lng','Your\x20Guess','No\x20images\x20found,\x20retrying...','resultText'];_0x1319=function(){return _0xc9a65b;};return _0x1319();}function showResultModal(_0x45bd09){const _0x30b5ef=_0x42cc,_0x41b37b=document['getElementById'](_0x30b5ef(0x1d6)),_0x3b3876=document['getElementById'](_0x30b5ef(0x1f1)),_0x5c8600=document['getElementById'](_0x30b5ef(0x1f4));if(distance_from_guess>0x3e8)_0x5c8600[_0x30b5ef(0x208)]=(distance_from_guess/0x3e8)['toFixed'](0x2)+_0x30b5ef(0x1b0);else _0x5c8600[_0x30b5ef(0x208)]=distance_from_guess+'\x20M';if(distance_from_guess>0x3e8)_0x3b3876[_0x30b5ef(0x208)]='Hmm!\x20Nice\x20try.';else{if(distance_from_guess>0xc8)_0x3b3876[_0x30b5ef(0x208)]='Good\x20job!';else _0x3b3876[_0x30b5ef(0x208)]=_0x30b5ef(0x1d5);}_0x41b37b[_0x30b5ef(0x1f5)][_0x30b5ef(0x1df)]=_0x30b5ef(0x1c1),createResultMap();}function createResultMap(){const _0x1b833f=_0x42cc,_0x5ca8af=document[_0x1b833f(0x20a)](_0x1b833f(0x20d));_0x5ca8af[_0x1b833f(0x208)]='';var _0x25f52a=L[_0x1b833f(0x211)](_0x1b833f(0x20d))[_0x1b833f(0x203)](true_location,0xc);L[_0x1b833f(0x1bd)](_0x1b833f(0x206),{'maxZoom':0x13})[_0x1b833f(0x1f2)](_0x25f52a),setTimeout(()=>{const _0x4e879b=_0x1b833f;_0x25f52a[_0x4e879b(0x1b1)]();},0x64);const _0x190879=L[_0x1b833f(0x1d1)](true_location,{'icon':L[_0x1b833f(0x20e)]({'iconUrl':_0x1b833f(0x1ec),'iconSize':[0x20,0x20]})})['addTo'](_0x25f52a)[_0x1b833f(0x1b6)](current_name),_0x4a468a=L[_0x1b833f(0x1d1)](guess_coordinates,{'icon':L[_0x1b833f(0x20e)]({'iconUrl':_0x1b833f(0x205),'iconSize':[0x20,0x20]})})[_0x1b833f(0x1f2)](_0x25f52a)[_0x1b833f(0x1b6)](_0x1b833f(0x1ef)),_0x2658dd=L[_0x1b833f(0x1e4)]([true_location,guess_coordinates],{'color':'blue','dashArray':'5,\x2010'})[_0x1b833f(0x1f2)](_0x25f52a),_0x33ef5a=new L[(_0x1b833f(0x1c6))]([_0x190879,_0x4a468a]);_0x25f52a[_0x1b833f(0x1eb)](_0x33ef5a[_0x1b833f(0x20c)]()[_0x1b833f(0x1dd)](0.1));}function closeResultModal(){const _0x5546a8=_0x42cc;document[_0x5546a8(0x20a)]('resultModal')[_0x5546a8(0x1f5)][_0x5546a8(0x1df)]=_0x5546a8(0x1fd);}window['onclick']=function(_0x5ae2e0){const _0x14d827=_0x42cc,_0xaa540e=document[_0x14d827(0x20a)]('resultModal');_0x5ae2e0['target']===_0xaa540e&&closeResultModal();};function nextRound(){const _0x21bf3d=_0x42cc;closeResultModal(),location[_0x21bf3d(0x1ad)]();}function goBack(){const _0x54b893=_0x42cc;window[_0x54b893(0x1da)][_0x54b893(0x1e8)]='/';}function showDonateModal(){const _0x6b0319=_0x42cc,_0xc56629=document[_0x6b0319(0x20a)](_0x6b0319(0x1bc));_0xc56629[_0x6b0319(0x1f5)]['display']=_0x6b0319(0x1c1);}function closeDonate(){const _0xc1fae1=_0x42cc,_0x1f29ec=document[_0xc1fae1(0x20a)](_0xc1fae1(0x1bc));_0x1f29ec['style'][_0xc1fae1(0x1df)]='none';}window[_0x4ac836(0x1ed)]=function(){const _0x333b5c=_0x4ac836,_0x32d809=new URLSearchParams(window['location'][_0x333b5c(0x1f8)]),_0x1321c4=_0x32d809[_0x333b5c(0x1f9)](_0x333b5c(0x1da));_0x1321c4&&(choiceLocation=_0x1321c4),minLat=boundingBoxVN[choiceLocation][0x1],maxLat=boundingBoxVN[choiceLocation][0x3],minLong=boundingBoxVN[choiceLocation][0x0],maxLong=boundingBoxVN[choiceLocation][0x2],delta=boundingBoxVN[choiceLocation][0x4],checkLibrariesLoaded()['then'](()=>{initialize();});};
+'use strict';
+
+var map;
+var resultmap;
+var markers = [];
+var guess_coordinates = [];
+var true_location = [];
+
+var accumulated_distance = 0;
+var current_name = '';
+var distance_from_guess = [];
+var check_count = 0;
+
+var choiceLocation = "HN"
+
+
+const boundingBoxVN = {
+  HN:     [105.7700, 20.9600, 105.8800, 21.0500, 0.003],  // Hà Nội
+  TPHCM:  [106.6200, 10.7100, 106.7500, 10.8300, 0.005],  // TP. Hồ Chí Minh
+  HP:     [106.6500, 20.8000, 106.7500, 20.9000, 0.05],  // Trung tâm Hải Phòng
+  ND:     [106.0000, 20.3500, 106.2500, 20.5000, 0.005],
+  DN:     [108.1700, 16.0000, 108.2500, 16.1000, 0.005],  // Đà Nẵng
+};
+
+var minLat = boundingBoxVN[choiceLocation][1];
+var maxLat = boundingBoxVN[choiceLocation][3];
+var minLong = boundingBoxVN[choiceLocation][0];
+var maxLong = boundingBoxVN[choiceLocation][2];      
+
+var delta = boundingBoxVN[choiceLocation][4];
+
+const accessToken = 'MLY|24113623194974280|5bf83fa202912f1cc3210b2cf968fb65';
+
+async function getRandomMapillaryImage() {
+  
+  // Generate a random point within the defined area
+  const randomLat = (Math.random() * (maxLat - minLat) + minLat);
+  const randomLng = (Math.random() * (maxLong - minLong) + minLong);
+
+    const bbox = [
+    (randomLng - delta).toFixed(4),
+    (randomLat - delta).toFixed(4),
+    (randomLng + delta).toFixed(4),
+    (randomLat + delta).toFixed(4)
+  ].join(',');
+
+  const url = `https://graph.mapillary.com/images?access_token=${accessToken}&fields=id,thumb_original_url,geometry,is_pano&limit=3&bbox=${bbox}&is_pano=true`;
+  try {
+    console.log('Fetching panoramic image...');
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.data && data.data.length > 0) {
+      // Filter for panoramic images first
+      const panoramicImages = data.data.filter(img => img.is_pano);
+      const image = panoramicImages.length > 0 ? panoramicImages[Math.floor(Math.random() * panoramicImages.length)] : data.data[0];
+      
+      console.log('Image fetched successfully');
+      return {
+        lat: image.geometry.coordinates[1],
+        lng: image.geometry.coordinates[0],
+        url: image.thumb_original_url,
+        id: image.id,
+        isPano: image.is_pano || false
+      };
+    } else {
+      console.log('No images found, retrying...');
+      return getRandomMapillaryImage();
+    }
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    // Show error in loading area
+    document.getElementById('pano').innerHTML = `
+      <div style="width:100%; height:400px; display:flex; justify-content:center; align-items:center; ">
+        <div style="text-align:center; color: #e74c3c;">
+          <div style="font-size: 18px; margin-bottom: 10px;">⚠️ Error loading image</div>
+          <div style="font-size: 14px;">Retrying...</div>
+        </div>
+      </div>
+    `;
+    // Retry after a short delay
+    setTimeout(() => getRandomMapillaryImage(), 2000);
+  }
+}
+
+function checkLibrariesLoaded() {
+  return new Promise((resolve) => {
+    const checkInterval = setInterval(() => {
+      if (window.L && window.PhotoSphereViewer) {
+        clearInterval(checkInterval);
+        resolve();
+      }
+    }, 100);
+  });
+}
+
+function showLoading() {
+  document.getElementById('pano').innerHTML = `
+    <div style="width:100%; height:400px; display:flex; justify-content:center; align-items:center; ">
+      <div style="text-align:center;">
+        <div style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 0 auto 15px;"></div>
+        <div style="color: #666; font-size: 16px;">Loading image...</div>
+      </div>
+    </div>
+  `;
+  
+  // Add CSS animation for spinner
+  if (!document.getElementById('loading-styles')) {
+    const style = document.createElement('style');
+    style.id = 'loading-styles';
+    style.textContent = `
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+function hideLoading() {
+  // Remove loading indicator
+  const panoElement = document.getElementById('pano');
+  if (panoElement && panoElement.innerHTML.includes('Loading image...')) {
+    panoElement.innerHTML = '';
+  }
+}
+
+function initialize() {
+  check_count = 0;
+  disableButton('check');
+  
+  // Show loading indicator
+  showLoading();
+
+  getRandomMapillaryImage().then(image => {
+    if (!image) return location.reload();
+    true_location = [image.lat, image.lng];
+    current_name = "VIET NAM";
+    document.getElementById('pano').innerHTML = ""; // Clear any existing content
+
+    try {
+      if (window.PhotoSphereViewer && window.PhotoSphereViewer.Viewer) {
+        // Hide loading before initializing viewer
+        hideLoading();
+        
+        const viewer = new PhotoSphereViewer.Viewer({
+          container: document.getElementById('pano'),
+          panorama: image.url,
+          loadingImg: null,
+          defaultYaw: 0,
+          defaultZoomLvl: -96,
+          navbar: [
+            'zoom',
+            'fullscreen'
+          ],
+          mousewheel: false,
+          touchmoveTwoFingers: true,
+        });
+        
+        // Add event listeners for loading states
+        viewer.addEventListener('ready', () => {
+          console.log('Photo Sphere Viewer loaded successfully');
+        });
+        
+        viewer.addEventListener('panorama-loaded', () => {
+          console.log('Panorama image loaded');
+        });
+        
+        viewer.addEventListener('panorama-error', (error) => {
+          console.error('Error loading panorama:', error);
+          // Fallback to regular image on panorama load error
+          hideLoading();
+          document.getElementById('pano').innerHTML = `<img src="${image.url}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;" />`;
+        });
+        
+      } else {
+        console.warn('PhotoSphereViewer not available, using fallback image');
+        hideLoading();
+        document.getElementById('pano').innerHTML = `<img src="${image.url}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;" />`;
+      }
+    } catch (error) {
+      console.error('Error initializing Photo Sphere Viewer:', error);
+      // Fallback to regular image
+      hideLoading();
+      document.getElementById('pano').innerHTML = `<img src="${image.url}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;" />`;
+    }
+
+
+    map = L.map('map').setView([(minLat + maxLat) / 2, (minLong + maxLong) / 2], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+    }).addTo(map);
+
+    map.on('click', function(e) {
+      deleteMarkers();
+      guess_coordinates = [e.latlng.lat, e.latlng.lng];
+      const marker = L.marker(e.latlng).addTo(map);
+      markers.push(marker);
+      if (check_count === 0) {
+        enableButton('check');
+        check_count += 1;
+      }
+    });
+  }).catch(error => {
+    console.error('Error in initialize function:', error);
+    document.getElementById('pano').innerHTML = `
+      <div style="width:100%; height:400px; display:flex; justify-content:center; align-items:center;">
+        <div style="text-align:center; color: #e74c3c;">
+          <div style="font-size: 18px; margin-bottom: 10px;">⚠️ Failed to load</div>
+          <button onclick="location.reload()" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">Retry</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function clearMarkers() {
+  for (let i = 0; i < markers.length; i++) {
+    map.removeLayer(markers[i]);
+  }
+  markers = [];
+}
+
+function deleteMarkers() {
+  clearMarkers();
+}
+
+function continueGame() {
+  var resModal = new bootstrap.Modal(document.getElementById('resultModal'));
+  resModal.hide();
+  location.reload();
+}
+
+function check() {
+  distance_from_guess = [];
+  var guess_error = distance(guess_coordinates[0], guess_coordinates[1], true_location[0], true_location[1], 'M');
+  accumulated_distance += parseFloat(guess_error);
+  distance_from_guess = guess_error;
+
+  showResultModal(distance_from_guess);
+
+  disableButton('check');
+}
+
+function distance(lat1, lon1, lat2, lon2, unit) {
+  if ((lat1 == lat2) && (lon1 == lon2)) {
+    return 0;
+  } else {
+    var radlat1 = Math.PI * lat1 / 180;
+    var radlat2 = Math.PI * lat2 / 180;
+    var theta = lon1 - lon2;
+    var radtheta = Math.PI * theta / 180;
+    var dist = Math.sin(radlat1) * Math.sin(radlat2) +
+               Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+
+    if (dist > 1) dist = 1;
+
+    dist = Math.acos(dist);
+    dist = dist * 180 / Math.PI;
+    dist = dist * 60 * 1.1515;
+
+    if (unit == "K") dist = dist * 1.609344;
+    if (unit == "N") dist = dist * 0.8684;
+
+    dist = dist * 1609.34;
+    return dist.toFixed(1);
+  }
+}
+
+function display_location() {
+  const scoreText = document.getElementById("score");
+  if (distance_from_guess > 1000)
+    scoreText.innerHTML = `Hmm! Your distance is ${distance_from_guess}m away.`;
+  else if (distance_from_guess > 200)
+    scoreText.innerHTML = `Good job! Your distance is ${distance_from_guess}m away.`;
+  else
+    scoreText.innerHTML = `Excellent! Your distance is ${distance_from_guess}m away.`;
+}
+
+function disableButton(id) {
+  document.getElementById(id).disabled = true;
+}
+
+function enableButton(id) {
+  document.getElementById(id).disabled = false;
+}
+
+function showResultModal(distanceKm) {
+  const modal = document.getElementById("resultModal");
+  const scoreText = document.getElementById("resultText");
+  const distanceText = document.getElementById("distance-guess");
+
+  if (distance_from_guess > 1000)
+    distanceText.innerHTML = `${(distance_from_guess / 1000).toFixed(2)} KM`;
+  else 
+    distanceText.innerHTML = `${distance_from_guess} M`;
+  // Update the score text
+  if (distance_from_guess > 1000)
+    scoreText.innerHTML = `Hmm! Nice try.`;
+  else if (distance_from_guess > 200)
+    scoreText.innerHTML = `Good job!`;
+  else
+    scoreText.innerHTML = `Excellent!`;
+  
+  // Show the modal
+  modal.style.display = "block";
+  
+  // Create the result map
+  createResultMap();
+}
+
+function createResultMap() {
+  // Clear any existing map
+  const resultContainer = document.getElementById('result');
+  resultContainer.innerHTML = '';
+  
+  var result_map = L.map('result').setView(true_location, 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+  }).addTo(result_map);
+
+  // Invalidate map size to ensure proper rendering
+  setTimeout(() => {
+    result_map.invalidateSize();
+  }, 100);
+
+  const true_marker = L.marker(true_location, {
+    icon: L.icon({
+      iconUrl: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+      iconSize: [32, 32],
+    })
+  }).addTo(result_map).bindPopup(current_name);
+
+  const guess_marker = L.marker(guess_coordinates, {
+    icon: L.icon({
+      iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+      iconSize: [32, 32],
+    })
+  }).addTo(result_map).bindPopup("Your Guess");
+
+  const polyline = L.polyline([true_location, guess_coordinates], { color: 'blue', dashArray: '5, 10' }).addTo(result_map);
+
+  // Fit map to show both markers
+  const group = new L.featureGroup([true_marker, guess_marker]);
+  result_map.fitBounds(group.getBounds().pad(0.1));
+}
+
+function closeResultModal() {
+  document.getElementById("resultModal").style.display = "none";
+}
+
+
+function nextRound() {
+  closeResultModal();
+  // Logic để reset game hoặc sang round tiếp theo
+  location.reload();
+}
+
+function goBack() {
+  // Logic để quay lại trang chính hoặc trang lựa chọn
+  window.location.href = '/';
+}
+
+
+function showDonateModal() {
+  const modal = document.getElementById("donateModal");
+
+  // Show the modal
+  modal.style.display = "block";
+
+}
+
+function closeDonate() {
+  const modal = document.getElementById("donateModal");
+  // Hide the modal
+  modal.style.display = "none";
+  // Optionally, you can reset the game or perform other actions
+}
+
+
+window.onload = function () {
+  // Get location parameter from URL before initializing
+  const params = new URLSearchParams(window.location.search);
+  const locationParam = params.get("location");
+  if (locationParam) {
+    choiceLocation = locationParam;
+  }
+  minLat = boundingBoxVN[choiceLocation][1];
+  maxLat = boundingBoxVN[choiceLocation][3];
+  minLong = boundingBoxVN[choiceLocation][0];
+  maxLong = boundingBoxVN[choiceLocation][2];      
+  delta = boundingBoxVN[choiceLocation][4];
+  
+  checkLibrariesLoaded().then(() => {
+    initialize();
+  });
+};
+
