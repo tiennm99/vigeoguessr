@@ -625,10 +625,6 @@
         
         @media (min-width: 768px) {
           
-            .game-section {
-                padding: 24px;
-            }
-            
             .score-header {
                 padding: 16px 24px;
             }

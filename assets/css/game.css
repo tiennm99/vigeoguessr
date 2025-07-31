@@ -184,7 +184,7 @@ body {
 }
 
 .logo-icon {
-    width: 48px;
+    width: 32px;
     height: 32px;
     background-size: contain;
     background-repeat: no-repeat;
@@ -616,6 +616,7 @@ body {
     }
     .logo-icon {
         height: 40px;
+        width: 40px;
     }
     .logo-text {
         width: 96px;
@@ -664,9 +665,7 @@ body {
 }
 
 @media (min-width: 768px) {
-    .game-section {
-        padding: 24px;
-    }
+
     .score-header {
         padding: 16px 24px;
     }
@@ -726,6 +725,7 @@ body {
     }
     .logo-icon {
         height: 48px;
+        width: 48px;
     }
     .logo-text {
         width: 112px;
