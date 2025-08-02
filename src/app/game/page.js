@@ -59,14 +59,14 @@ function GamePageContent() {
 
   const handleSubmit = () => {
     if (!hasGuessed) return;
-    
+
     const dist = calculateDistance(
       guessLocation[0],
       guessLocation[1],
       trueLocation[0],
       trueLocation[1]
     );
-    
+
     setDistance(dist);
     setShowResultModal(true);
   };
@@ -85,28 +85,28 @@ function GamePageContent() {
   return (
     <div className="main-container">
       <div className="background-layer"></div>
-      
+
       <div className="content-wrapper">
         <div className="gradient-overlay">
           <Header onDonateClick={() => setShowDonateModal(true)} />
-          
+
           <div className="game-section">
             <div className="score-header">
               <button className="back-btn" onClick={goBack}>
-                <div className="diamond-icon" style={{ backgroundImage: 'url(/back.svg)' }}></div>
+                <div className="diamond-icon">&lt;</div>
               </button>
             </div>
-            
+
             <div className="game-content">
               <PanoViewer imageData={imageData} isLoading={isLoading} />
-              
+
               <div className="right-panel">
-                <GameMap 
+                <GameMap
                   choiceLocation={choiceLocation}
                   onLocationSelect={handleLocationSelect}
                 />
-                <button 
-                  className="check-btn" 
+                <button
+                  className="check-btn"
                   disabled={!hasGuessed}
                   onClick={handleSubmit}
                   style={{ opacity: hasGuessed ? 1 : 0.5 }}
@@ -139,9 +139,9 @@ function GamePageContent() {
         onNextRound={handleNextRound}
       />
 
-      <DonateModal 
-        isOpen={showDonateModal} 
-        onClose={() => setShowDonateModal(false)} 
+      <DonateModal
+        isOpen={showDonateModal}
+        onClose={() => setShowDonateModal(false)}
       />
     </div>
   );
