@@ -1,22 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { ImageData } from '@/types/game';
+import { useEffect, useRef } from 'react';
 
-interface PanoViewerProps {
-  imageData: ImageData | null;
-  isLoading: boolean;
-}
-
-declare global {
-  interface Window {
-    PhotoSphereViewer: any;
-  }
-}
-
-export default function PanoViewer({ imageData, isLoading }: PanoViewerProps) {
-  const panoRef = useRef<HTMLDivElement>(null);
-  const viewerRef = useRef<any>(null);
+export default function PanoViewer({ imageData, isLoading }) {
+  const panoRef = useRef(null);
+  const viewerRef = useRef(null);
 
   useEffect(() => {
     if (!panoRef.current || !imageData) return;
@@ -51,7 +39,7 @@ export default function PanoViewer({ imageData, isLoading }: PanoViewerProps) {
           console.log('Panorama image loaded');
         });
 
-        viewerRef.current.addEventListener('panorama-error', (error: any) => {
+        viewerRef.current.addEventListener('panorama-error', (error) => {
           console.error('Error loading panorama:', error);
           // Fallback to regular image
           if (panoRef.current) {

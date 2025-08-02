@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import DonateModal from '@/components/DonateModal';
-import { locationNames, LocationKey } from '@/lib/gameUtils';
+import { locationNames } from '@/lib/gameUtils';
 
 export default function Home() {
   const [showDonateModal, setShowDonateModal] = useState(false);
   const router = useRouter();
 
-  const startGame = (location: LocationKey) => {
+  const startGame = (location) => {
     router.push(`/game?location=${location}`);
   };
 
@@ -52,7 +52,7 @@ export default function Home() {
                   <button 
                     key={key}
                     className="bridge-btn" 
-                    onClick={() => startGame(key as LocationKey)}
+                    onClick={() => startGame(key)}
                   >
                     <div className="bridge-text">{name}</div>
                   </button>

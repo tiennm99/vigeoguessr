@@ -7,8 +7,7 @@ import DonateModal from '@/components/DonateModal';
 import PanoViewer from '@/components/PanoViewer';
 import GameMap from '@/components/GameMap';
 import ResultModal from '@/components/ResultModal';
-import { getRandomMapillaryImage, calculateDistance, LocationKey } from '@/lib/gameUtils';
-import { ImageData } from '@/types/game';
+import { getRandomMapillaryImage, calculateDistance } from '@/lib/gameUtils';
 
 function GamePageContent() {
   const router = useRouter();
@@ -16,10 +15,10 @@ function GamePageContent() {
   const [showDonateModal, setShowDonateModal] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [imageData, setImageData] = useState<ImageData | null>(null);
-  const [choiceLocation, setChoiceLocation] = useState<LocationKey>('HN');
-  const [trueLocation, setTrueLocation] = useState<[number, number]>([0, 0]);
-  const [guessLocation, setGuessLocation] = useState<[number, number]>([0, 0]);
+  const [imageData, setImageData] = useState(null);
+  const [choiceLocation, setChoiceLocation] = useState('HN');
+  const [trueLocation, setTrueLocation] = useState([0, 0]);
+  const [guessLocation, setGuessLocation] = useState([0, 0]);
   const [distance, setDistance] = useState(0);
   const [hasGuessed, setHasGuessed] = useState(false);
 
@@ -41,7 +40,7 @@ function GamePageContent() {
   }, [choiceLocation]);
 
   useEffect(() => {
-    const location = searchParams.get('location') as LocationKey;
+    const location = searchParams.get('location');
     if (location) {
       setChoiceLocation(location);
     }
@@ -51,10 +50,11 @@ function GamePageContent() {
     loadRandomImage();
   }, [loadRandomImage]);
 
-  const handleLocationSelect = (lat: number, lng: number) => {
+  const handleLocationSelect = useCallback((lat, lng) => {
+    console.log('Location selected:', lat, lng);
     setGuessLocation([lat, lng]);
     setHasGuessed(true);
-  };
+  }, []);
 
   const handleSubmit = () => {
     if (!hasGuessed) return;
@@ -108,9 +108,22 @@ function GamePageContent() {
                   className="check-btn" 
                   disabled={!hasGuessed}
                   onClick={handleSubmit}
+                  style={{ opacity: hasGuessed ? 1 : 0.5 }}
                 >
-                  <div className="check-text">SUBMIT</div>
+                  <div className="check-text">
+                    {hasGuessed ? 'SUBMIT GUESS' : 'CLICK MAP TO GUESS'}
+                  </div>
                 </button>
+                {hasGuessed && (
+                  <div style={{
+                    color: '#05A38C',
+                    fontSize: '12px',
+                    textAlign: 'center',
+                    marginTop: '10px'
+                  }}>
+                    Location selected: {guessLocation[0].toFixed(4)}, {guessLocation[1].toFixed(4)}
+                  </div>
+                )}
               </div>
             </div>
           </div>

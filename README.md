@@ -9,12 +9,12 @@ A Next.js-based Vietnamese geography guessing game where players guess the locat
 - 🎯 Interactive map for location guessing
 - 📊 Distance-based scoring system
 - 🖼️ 360° panoramic street view images using Photo Sphere Viewer
-- ⚡ Built with Next.js 14 and TypeScript for performance and type safety
+- ⚡ Built with Next.js 14 and JavaScript for performance and simplicity
 
 ## Tech Stack
 
 - **Framework**: Next.js 14 with App Router
-- **Language**: TypeScript
+- **Language**: JavaScript
 - **Styling**: CSS Modules with custom styling
 - **Maps**: Leaflet.js
 - **360° Images**: Photo Sphere Viewer
@@ -60,26 +60,24 @@ npm start
 ├── app/                    # Next.js app directory
 │   ├── game/              # Game page
 │   ├── globals.css        # Global styles
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Home page
+│   ├── layout.js          # Root layout
+│   └── page.js            # Home page
 ├── components/            # Reusable React components
-│   ├── DonateModal.tsx
-│   ├── GameMap.tsx
-│   ├── Header.tsx
-│   ├── PanoViewer.tsx
-│   └── ResultModal.tsx
+│   ├── DonateModal.js
+│   ├── GameMap.js
+│   ├── Header.js
+│   ├── PanoViewer.js
+│   └── ResultModal.js
 ├── lib/                   # Utility functions
-│   └── gameUtils.ts       # Game logic and API calls
-├── types/                 # TypeScript type definitions
-│   └── game.ts
+│   └── gameUtils.js       # Game logic and API calls
 └── public/               # Static assets
 ```
 
 ## Key Improvements from Original
 
-- **Modern Framework**: Migrated from vanilla HTML/JS to Next.js with TypeScript
+- **Modern Framework**: Migrated from vanilla HTML/JS to Next.js with JavaScript
 - **Component-Based Architecture**: Modular, reusable React components
-- **Type Safety**: Full TypeScript implementation with proper type definitions
+- **Clean Code**: Well-structured JavaScript with proper organization
 - **Code Deduplication**: Eliminated duplicate code and consolidated utilities
 - **Performance**: Optimized with Next.js built-in optimizations
 - **Maintainability**: Cleaner code structure and separation of concerns

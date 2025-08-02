@@ -2,15 +2,10 @@
 
 import Image from 'next/image';
 
-interface DonateModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export default function DonateModal({ isOpen, onClose }: DonateModalProps) {
+export default function DonateModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
+  const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
     }

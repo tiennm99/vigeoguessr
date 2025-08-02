@@ -2,29 +2,15 @@
 
 import { useEffect, useRef } from 'react';
 
-interface ResultModalProps {
-  isOpen: boolean;
-  distance: number;
-  trueLocation: [number, number];
-  guessLocation: [number, number];
-  onNextRound: () => void;
-}
-
-declare global {
-  interface Window {
-    L: any;
-  }
-}
-
 export default function ResultModal({ 
   isOpen, 
   distance, 
   trueLocation, 
   guessLocation, 
   onNextRound 
-}: ResultModalProps) {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
+}) {
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen || !mapRef.current) return;
@@ -85,14 +71,14 @@ export default function ResultModal({
 
   if (!isOpen) return null;
 
-  const formatDistance = (dist: number) => {
+  const formatDistance = (dist) => {
     if (dist > 1000) {
       return `${(dist / 1000).toFixed(2)} KM`;
     }
     return `${dist} M`;
   };
 
-  const getResultMessage = (dist: number) => {
+  const getResultMessage = (dist) => {
     if (dist > 1000) {
       return "Hmm! Nice try.";
     } else if (dist > 200) {

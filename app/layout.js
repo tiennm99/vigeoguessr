@@ -1,10 +1,10 @@
-import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'VIGEOGUESSR - Play Now',
   description: 'VIGEOGUESSR - Play a fun city guessing game. Choose your city and guess the location of the picture as accurately as possible!',
   keywords: 'GeoGuessr, city guessing game, Vietnam, Hanoi, Ho Chi Minh, Hai Phong, Nam Dinh, play online',
@@ -23,11 +23,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
@@ -37,9 +33,18 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         {children}
-        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" async></script>
-        <script src="https://unpkg.com/three@0.152.0/build/three.min.js" async></script>
-        <script src="https://unpkg.com/@photo-sphere-viewer/core@5.7.4/index.js" async></script>
+        <Script 
+          src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" 
+          strategy="beforeInteractive"
+        />
+        <Script 
+          src="https://unpkg.com/three@0.152.0/build/three.min.js" 
+          strategy="lazyOnload"
+        />
+        <Script 
+          src="https://unpkg.com/@photo-sphere-viewer/core@5.7.4/index.js" 
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   )
