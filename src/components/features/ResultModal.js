@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 export default function ResultModal({ 
   isOpen, 
@@ -11,61 +13,145 @@ export default function ResultModal({
 }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
 
   useEffect(() => {
     if (!isOpen || !mapRef.current) return;
 
     const initResultMap = () => {
-      if (!window.L) {
-        setTimeout(initResultMap, 100);
-        return;
+      try {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.remove();
+        }
+
+        // Clear previous markers
+        markersRef.current = [];
+
+        const [trueLat, trueLng] = trueLocation;
+        const [guessLat, guessLng] = guessLocation;
+
+        // Create MapLibre map
+        mapInstanceRef.current = new maplibregl.Map({
+          container: mapRef.current,
+          style: {
+            version: 8,
+            sources: {
+              'osm-tiles': {
+                type: 'raster',
+                tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                attribution: '© OpenStreetMap contributors'
+              }
+            },
+            layers: [
+              {
+                id: 'osm-tiles-layer',
+                type: 'raster',
+                source: 'osm-tiles'
+              }
+            ]
+          },
+          center: [trueLng, trueLat],
+          zoom: 12
+        });
+
+        mapInstanceRef.current.on('load', () => {
+          // Add true location marker (green)
+          mapInstanceRef.current.addSource('true-location', {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [trueLng, trueLat]
+              }
+            }
+          });
+
+          mapInstanceRef.current.addLayer({
+            id: 'true-location-marker',
+            type: 'circle',
+            source: 'true-location',
+            paint: {
+              'circle-radius': 12,
+              'circle-color': '#00ff00',
+              'circle-stroke-color': '#ffffff',
+              'circle-stroke-width': 3
+            }
+          });
+
+          // Add guess location marker (red)
+          mapInstanceRef.current.addSource('guess-location', {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [guessLng, guessLat]
+              }
+            }
+          });
+
+          mapInstanceRef.current.addLayer({
+            id: 'guess-location-marker',
+            type: 'circle',
+            source: 'guess-location',
+            paint: {
+              'circle-radius': 12,
+              'circle-color': '#ff0000',
+              'circle-stroke-color': '#ffffff',
+              'circle-stroke-width': 3
+            }
+          });
+
+          // Add line between markers
+          mapInstanceRef.current.addSource('connection-line', {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              geometry: {
+                type: 'LineString',
+                coordinates: [[trueLng, trueLat], [guessLng, guessLat]]
+              }
+            }
+          });
+
+          mapInstanceRef.current.addLayer({
+            id: 'connection-line-layer',
+            type: 'line',
+            source: 'connection-line',
+            paint: {
+              'line-color': '#0066ff',
+              'line-width': 3,
+              'line-opacity': 0.8
+            }
+          });
+
+          // Fit map to show both markers
+          const bounds = new maplibregl.LngLatBounds();
+          bounds.extend([trueLng, trueLat]);
+          bounds.extend([guessLng, guessLat]);
+          
+          mapInstanceRef.current.fitBounds(bounds, {
+            padding: 50,
+            maxZoom: 15
+          });
+        });
+
+      } catch (error) {
+        console.error('Error initializing result map:', error);
       }
-
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-      }
-
-      mapInstanceRef.current = window.L.map(mapRef.current).setView(trueLocation, 12);
-      
-      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19
-      }).addTo(mapInstanceRef.current);
-
-      setTimeout(() => {
-        mapInstanceRef.current.invalidateSize();
-      }, 100);
-
-      // Add true location marker (green)
-      const trueLocationMarker = window.L.marker(trueLocation, {
-        icon: window.L.icon({
-          iconUrl: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
-          iconSize: [32, 32]
-        })
-      }).addTo(mapInstanceRef.current).bindPopup('Actual Location');
-
-      // Add guess marker (red)
-      const guessMarker = window.L.marker(guessLocation, {
-        icon: window.L.icon({
-          iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-          iconSize: [32, 32]
-        })
-      }).addTo(mapInstanceRef.current).bindPopup('Your Guess');
-
-      // Fit map to show both markers
-      const featureGroup = new window.L.featureGroup([trueLocationMarker, guessMarker]);
-      mapInstanceRef.current.fitBounds(featureGroup.getBounds().pad(0.1));
-
-      // Add line between markers
-      window.L.polyline([trueLocation, guessLocation], { color: 'blue' }).addTo(mapInstanceRef.current);
     };
 
-    initResultMap();
+    const timer = setTimeout(initResultMap, 100);
 
     return () => {
+      clearTimeout(timer);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
+      markersRef.current = [];
     };
   }, [isOpen, trueLocation, guessLocation]);
 
