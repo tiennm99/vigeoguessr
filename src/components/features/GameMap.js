@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { boundingBoxVN } from '@/lib/gameUtils';
+import { boundingBoxVN } from '@/constants/locations';
 
 export default function GameMap({ choiceLocation, onLocationSelect }) {
   const mapRef = useRef(null);

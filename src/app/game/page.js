@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Header from '@/components/Header';
-import DonateModal from '@/components/DonateModal';
-import PanoViewer from '@/components/PanoViewer';
-import GameMap from '@/components/GameMap';
-import ResultModal from '@/components/ResultModal';
-import { getRandomMapillaryImage, calculateDistance } from '@/lib/gameUtils';
+import Header from '@/components/ui/Header';
+import DonateModal from '@/components/ui/DonateModal';
+import PanoViewer from '@/components/features/PanoViewer';
+import GameMap from '@/components/features/GameMap';
+import ResultModal from '@/components/features/ResultModal';
+import { getRandomMapillaryImage } from '@/utils/mapillary';
+import { calculateDistance } from '@/utils/distance';
 
 function GamePageContent() {
   const router = useRouter();

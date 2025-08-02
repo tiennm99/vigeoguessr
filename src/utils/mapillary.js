@@ -1,23 +1,10 @@
-export const boundingBoxVN = {
-  'HN': [105.77, 20.96, 105.88, 21.05, 0.003],
-  'TPHCM': [106.62, 10.71, 106.75, 10.83, 0.005],
-  'HP': [106.65, 20.8, 106.75, 20.9, 0.05],
-  'ND': [106, 20.35, 106.25, 20.5, 0.005],
-  'DN': [108.17, 16, 108.25, 16.1, 0.005],
-  'DL': [108.38, 11.89, 108.50, 12.00, 0.005],
-  'DHLA': [106.35, 10.85, 106.45, 10.95, 0.005]
-};
+import { boundingBoxVN } from '@/constants/locations';
 
-export const locationNames = {
-  'HN': 'HA NOI',
-  'TPHCM': 'TP. HO CHI MINH',
-  'HP': 'HAI PHONG',
-  'ND': 'NAM DINH',
-  'DN': 'DA NANG',
-  'DL': 'DALAT',
-  'DHLA': 'DUC HOA'
-};
-
+/**
+ * Fetches a random panoramic image from Mapillary API within the specified Vietnamese city bounds
+ * @param {string} choiceLocation - The location code (e.g., 'HN', 'TPHCM')
+ * @returns {Promise<Object|null>} Image data with coordinates and URL, or null if failed
+ */
 export async function getRandomMapillaryImage(choiceLocation) {
   const [minLong, minLat, maxLong, maxLat, delta] = boundingBoxVN[choiceLocation];
   
@@ -59,29 +46,4 @@ export async function getRandomMapillaryImage(choiceLocation) {
     console.error("Error fetching image:", error);
     return null;
   }
-}
-
-export function calculateDistance(lat1, lon1, lat2, lon2) {
-  if (lat1 === lat2 && lon1 === lon2) {
-    return 0;
-  }
-  
-  const radlat1 = Math.PI * lat1 / 180;
-  const radlat2 = Math.PI * lat2 / 180;
-  const theta = lon1 - lon2;
-  const radtheta = Math.PI * theta / 180;
-  
-  let dist = Math.sin(radlat1) * Math.sin(radlat2) + 
-             Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-  
-  if (dist > 1) {
-    dist = 1;
-  }
-  
-  dist = Math.acos(dist);
-  dist = dist * 180 / Math.PI;
-  dist = dist * 60 * 1.1515;
-  dist = dist * 1609.34; // Convert to meters
-  
-  return parseFloat(dist.toFixed(1));
 }

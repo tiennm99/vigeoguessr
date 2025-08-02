@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '@/components/Header';
-import DonateModal from '@/components/DonateModal';
-import { locationNames } from '@/lib/gameUtils';
+import Header from '@/components/ui/Header';
+import DonateModal from '@/components/ui/DonateModal';
+import { locationNames } from '@/constants/locations';
 
 export default function Home() {
   const [showDonateModal, setShowDonateModal] = useState(false);
