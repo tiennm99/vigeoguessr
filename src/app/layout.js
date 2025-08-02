@@ -26,17 +26,12 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-        <link rel="stylesheet" href="https://unpkg.com/mapillary-js@4.1.2/dist/mapillary.css" />
       </head>
       <body className={inter.className}>
         {children}
         <Script
           src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
           strategy="beforeInteractive"
-        />
-        <Script
-          src="https://unpkg.com/mapillary-js@4.1.2/dist/mapillary.js"
-          strategy="lazyOnload"
         />
       </body>
     </html>

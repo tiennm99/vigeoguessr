@@ -9,12 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@photo-sphere-viewer/core": "^5.7.4",
     "leaflet": "^1.9.4",
+    "mapillary-js": "^4.1.2",
     "next": "^14.0.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "three": "^0.152.0"
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "eslint": "^8.0.0",
