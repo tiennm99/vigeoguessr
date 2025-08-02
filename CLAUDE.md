@@ -64,6 +64,7 @@ This project uses a carefully chosen combination of specialized libraries rather
 ### Key Components
 - **GameMap**: MapLibre GL JS integration with click-based location selection, automatic centering based on city choice, and native coordinate synchronization
 - **PanoViewer**: MapillaryJS npm module integration with precise coordinate extraction, error handling and fallback display
+- **ResultModal**: MapLibre GL JS result map showing true location (green), guess location (red), and connecting line with distance calculation
 - **Game Page**: Main game orchestration with state management for loading, guessing, and results
 
 ### Data Structure
@@ -166,5 +167,7 @@ Game state managed at page level with React hooks:
   - Implemented precise coordinate synchronization using MapillaryJS `getPosition()` method
   - Enhanced `src/components/features/PanoViewer.js` with `onPreciseLocationLoad` callback for coordinate extraction
   - Updated game page to use precise MapillaryJS coordinates instead of server-provided coordinates
+  - Migrated `src/components/features/ResultModal.js` from Leaflet to MapLibre GL JS with GeoJSON markers and styling
   - Solved coordinate mismatch issues between street imagery and map interface
+  - Fixed empty result page issue by ensuring all map components use MapLibre GL JS
 - Project now follows Next.js 14 best practices, uses native MapillaryJS coordination, and is ready for TypeScript migration
