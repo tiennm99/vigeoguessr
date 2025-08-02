@@ -57,6 +57,11 @@ function GamePageContent() {
     setHasGuessed(true);
   }, []);
 
+  const handlePreciseLocationLoad = useCallback((lat, lng) => {
+    console.log('Precise MapillaryJS coordinates loaded:', lat, lng);
+    setTrueLocation([lat, lng]);
+  }, []);
+
   const handleSubmit = () => {
     if (!hasGuessed) return;
 
@@ -98,7 +103,11 @@ function GamePageContent() {
             </div>
 
             <div className="game-content">
-              <PanoViewer imageData={imageData} isLoading={isLoading} />
+              <PanoViewer 
+                imageData={imageData} 
+                isLoading={isLoading} 
+                onPreciseLocationLoad={handlePreciseLocationLoad}
+              />
 
               <div className="right-panel">
                 <GameMap

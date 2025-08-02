@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { Viewer } from 'mapillary-js';
 import 'mapillary-js/dist/mapillary.css';
 
-export default function PanoViewer({ imageData, isLoading }) {
+export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad }) {
   const panoRef = useRef(null);
   const viewerRef = useRef(null);
 
@@ -23,8 +23,25 @@ export default function PanoViewer({ imageData, isLoading }) {
           imageId: imageData.id
         });
 
-        viewerRef.current.on('image', (image) => {
+        viewerRef.current.on('image', async (image) => {
           console.log('MapillaryJS image loaded successfully:', image.id);
+          
+          try {
+            // Get precise position from MapillaryJS
+            const precisePosition = await viewerRef.current.getPosition();
+            console.log('Precise MapillaryJS coordinates:', precisePosition);
+            
+            // Notify parent component of precise coordinates
+            if (onPreciseLocationLoad) {
+              onPreciseLocationLoad(precisePosition.lat, precisePosition.lng);
+            }
+          } catch (error) {
+            console.warn('Could not get precise position from MapillaryJS:', error);
+            // Fall back to original coordinates if precise coordinates fail
+            if (onPreciseLocationLoad) {
+              onPreciseLocationLoad(imageData.lat, imageData.lng);
+            }
+          }
         });
 
         viewerRef.current.on('error', (error) => {
@@ -37,6 +54,10 @@ export default function PanoViewer({ imageData, isLoading }) {
                    alt="Street view" />
             `;
           }
+          // Use original coordinates if MapillaryJS fails
+          if (onPreciseLocationLoad) {
+            onPreciseLocationLoad(imageData.lat, imageData.lng);
+          }
         });
       } catch (error) {
         console.error('Error initializing MapillaryJS:', error);
@@ -47,6 +68,10 @@ export default function PanoViewer({ imageData, isLoading }) {
                  style="width:100%; height:100%; object-fit:cover; border-radius:10px;" 
                  alt="Street view" />
           `;
+        }
+        // Use original coordinates if MapillaryJS initialization fails
+        if (onPreciseLocationLoad) {
+          onPreciseLocationLoad(imageData.lat, imageData.lng);
         }
       }
     };
@@ -59,7 +84,19 @@ export default function PanoViewer({ imageData, isLoading }) {
         viewerRef.current = null;
       }
     };
-  }, [imageData]);
+  }, [imageData, onPreciseLocationLoad]);
+
+  // Expose viewer instance for potential coordinate synchronization
+  useEffect(() => {
+    if (viewerRef.current && window) {
+      window.mapillaryViewer = viewerRef.current;
+    }
+    return () => {
+      if (window) {
+        delete window.mapillaryViewer;
+      }
+    };
+  }, []);
 
   if (isLoading) {
     return (

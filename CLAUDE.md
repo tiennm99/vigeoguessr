@@ -49,15 +49,21 @@ src/
 
 ## Architecture
 
+### Architectural Design Philosophy
+
+**Multi-Library Approach: Each Tool for Its Optimal Purpose**
+
+This project uses a carefully chosen combination of specialized libraries rather than trying to force a single library to handle all use cases. This approach provides superior user experience, maintainability, and performance.
+
 ### Core Game Flow
 1. **Image Fetching**: `src/utils/mapillary.js:getRandomMapillaryImage()` fetches random panoramic images via server-side API (`src/app/api/mapillary/route.js`) within predefined Vietnamese city boundaries
 2. **Display**: `src/components/features/PanoViewer.js` renders 360° images using MapillaryJS npm module with fallback to regular images
-3. **Interaction**: `src/components/features/GameMap.js` provides Leaflet-based interactive map for location guessing
+3. **Interaction**: `src/components/features/GameMap.js` provides MapLibre GL JS-based interactive map for location guessing
 4. **Scoring**: Distance calculation using haversine formula in `src/utils/distance.js:calculateDistance()`
 
 ### Key Components
-- **GameMap**: Leaflet.js integration with click-based location selection, automatic centering based on city choice
-- **PanoViewer**: MapillaryJS npm module integration with error handling and fallback display
+- **GameMap**: MapLibre GL JS integration with click-based location selection, automatic centering based on city choice, and native coordinate synchronization
+- **PanoViewer**: MapillaryJS npm module integration with precise coordinate extraction, error handling and fallback display
 - **Game Page**: Main game orchestration with state management for loading, guessing, and results
 
 ### Data Structure
@@ -65,7 +71,7 @@ src/
 - Location codes: HN (Hanoi), TPHCM (Ho Chi Minh City), HP (Hai Phong), ND (Nam Dinh), DN (Da Nang), DL (Dalat), DHLA (Duc Hoa)
 
 ### External Dependencies
-- **Leaflet**: Map rendering (loaded via CDN in layout.js)
+- **MapLibre GL JS**: Interactive map rendering (npm module with CSS import) - provides native coordinate synchronization with MapillaryJS
 - **MapillaryJS**: 360° street imagery display (npm module with CSS import)
 - **Mapillary Graph API**: Street view image source with server-side access token security
 
@@ -75,11 +81,67 @@ Game state managed at page level with React hooks:
 - Location selection and guess submission
 - Distance calculation and result display
 
+### Why This Architecture: Decision Rationale
+
+#### **1. MapLibre GL JS for Geographic Selection (NOT Leaflet or MapillaryJS Earth Mode)**
+
+**Decision**: Use MapLibre GL JS for the guessing map interface
+
+**Why MapLibre GL JS?**
+- ✅ **Native MapillaryJS Coordination**: Built-in coordinate synchronization with MapillaryJS for precise coordinate matching
+- ✅ **No API Keys Required**: Fully open source, no licensing restrictions
+- ✅ **WebGL Performance**: Hardware-accelerated rendering for smooth interactions
+- ✅ **Precise Coordinate System**: Uses same coordinate system as MapillaryJS, eliminating mismatches
+- ✅ **Familiar UX**: Traditional map interface users expect for location guessing
+- ✅ **Complete Geographic Coverage**: Full city-wide map coverage with various tile sources
+
+**Why NOT Leaflet?**
+- ❌ **Coordinate Mismatches**: Different coordinate systems cause precision issues with MapillaryJS
+- ❌ **No Native Sync**: Lacks built-in coordinate synchronization with MapillaryJS
+- ❌ **Limited Performance**: Canvas-based rendering vs WebGL acceleration
+
+**Why NOT MapillaryJS Earth Mode?**
+- ❌ **Limited Coverage**: Earth mode only works where street imagery exists, not city-wide
+- ❌ **Complex UX**: Bird's eye view is designed for navigation around imagery, not geographic selection
+
+#### **2. MapillaryJS for Street Imagery (NOT Generic Image Viewers)**
+
+**Decision**: Use MapillaryJS for 360° street imagery display
+
+**Why MapillaryJS?**
+- ✅ **Native Integration**: Built specifically for Mapillary's street imagery ecosystem
+- ✅ **WebGL Performance**: Hardware-accelerated rendering for smooth 360° interaction
+- ✅ **Built-in Controls**: Native pan, zoom, and navigation controls
+- ✅ **Future Extensibility**: Supports advanced features like spatial data visualization
+
+**Why NOT Photo Sphere Viewer or alternatives?**
+- ❌ **Generic Solution**: Not optimized for street imagery data format
+- ❌ **Performance**: Less efficient rendering without Mapillary-specific optimizations
+- ❌ **Limited Features**: Lacks integration with Mapillary's advanced capabilities
+
+#### **3. Server-Side API (NOT Client-Side MapillaryJS Data Provider)**
+
+**Decision**: Use server-side API for geographic image discovery
+
+**Why Server-Side API?**
+- ✅ **Security**: API keys remain server-side, preventing exposure
+- ✅ **Geographic Discovery**: MapillaryJS is designed for navigation between known IDs, not location-based discovery
+- ✅ **Controlled Access**: Server can implement rate limiting and caching
+- ✅ **Separation of Concerns**: Clean separation between data fetching and display
+
+**Why NOT MapillaryJS Data Provider?**
+- ❌ **Wrong Use Case**: MapillaryJS data providers are for navigation, not geographic bounds queries
+- ❌ **Security Risk**: Would require exposing API keys client-side
+- ❌ **Complex Implementation**: Would require understanding internal cell systems
+
 ### Important Implementation Notes
-- Leaflet maps loaded via CDN, MapillaryJS loaded as npm module with CSS import
+- **MapLibre GL JS + MapillaryJS integration solves coordinate precision**: Native coordinate synchronization eliminates mismatches
+- **Precise coordinate flow**: MapillaryJS `getPosition()` provides exact coordinates, MapLibre GL JS uses same coordinate system
+- **Coordinate synchronization**: PanoViewer extracts precise coordinates via `onPreciseLocationLoad` callback
 - Components use refs for DOM manipulation and cleanup
-- Server-side API route (`/api/mapillary`) handles Mapillary Graph API calls with secure token storage
+- Server-side API route (`/api/mapillary`) handles Mapillary Graph API calls for geographic image discovery with secure token storage
 - Client-side utility includes retry logic for failed server requests
+- Once image ID is obtained, MapillaryJS handles the 360° street imagery display with precise coordinate extraction
 - Image fallback system handles panoramic vs regular image display
 
 ### Recent Changes (Completed)
@@ -97,4 +159,12 @@ Game state managed at page level with React hooks:
   - Removed CDN imports from `src/app/layout.js` in favor of npm module
   - Enhanced error handling and retry logic for server-side requests
   - Maintained fallback image display for error handling
-- Project now follows Next.js 14 best practices and is ready for TypeScript migration
+- **MapLibre GL JS Migration**: Replaced Leaflet with MapLibre GL JS for native MapillaryJS coordinate synchronization
+  - Installed MapLibre GL JS v5.6.1 as npm dependency and removed Leaflet dependencies
+  - Removed Leaflet CDN imports from `src/app/layout.js`
+  - Completely refactored `src/components/features/GameMap.js` to use MapLibre GL JS with WebGL rendering
+  - Implemented precise coordinate synchronization using MapillaryJS `getPosition()` method
+  - Enhanced `src/components/features/PanoViewer.js` with `onPreciseLocationLoad` callback for coordinate extraction
+  - Updated game page to use precise MapillaryJS coordinates instead of server-provided coordinates
+  - Solved coordinate mismatch issues between street imagery and map interface
+- Project now follows Next.js 14 best practices, uses native MapillaryJS coordination, and is ready for TypeScript migration

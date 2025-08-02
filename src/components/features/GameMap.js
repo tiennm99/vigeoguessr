@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { boundingBoxVN } from '@/constants/locations';
 
 export default function GameMap({ choiceLocation, onLocationSelect }) {
@@ -21,67 +23,95 @@ export default function GameMap({ choiceLocation, onLocationSelect }) {
     if (!mapRef.current || isInitialized) return;
 
     const initMap = () => {
-      if (!window.L || !window.L.map) {
-        console.log('Leaflet not loaded yet, retrying...');
-        setTimeout(initMap, 200);
-        return;
-      }
-
       try {
         const [minLong, minLat, maxLong, maxLat] = boundingBoxVN[choiceLocation];
         const centerLat = (minLat + maxLat) / 2;
         const centerLng = (minLong + maxLong) / 2;
 
-        console.log('Initializing map for location:', choiceLocation);
+        console.log('Initializing MapLibre map for location:', choiceLocation);
         
-        // Create new map
-        mapInstanceRef.current = window.L.map(mapRef.current, {
-          center: [centerLat, centerLng],
-          zoom: 10,
-          zoomControl: true,
-          attributionControl: true
+        // Create new MapLibre map
+        mapInstanceRef.current = new maplibregl.Map({
+          container: mapRef.current,
+          style: {
+            version: 8,
+            sources: {
+              'osm-tiles': {
+                type: 'raster',
+                tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                attribution: '© OpenStreetMap contributors'
+              }
+            },
+            layers: [
+              {
+                id: 'osm-tiles-layer',
+                type: 'raster',
+                source: 'osm-tiles'
+              }
+            ]
+          },
+          center: [centerLng, centerLat],
+          zoom: 9
         });
-        
-        // Add tile layer
-        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(mapInstanceRef.current);
 
         // Add click event listener
         mapInstanceRef.current.on('click', (event) => {
-          console.log('Map clicked at:', event.latlng);
+          const { lng, lat } = event.lngLat;
+          console.log('MapLibre map clicked at:', { lat, lng });
           
           // Clear existing markers
-          markersRef.current.forEach(marker => {
-            if (mapInstanceRef.current) {
-              mapInstanceRef.current.removeLayer(marker);
+          markersRef.current.forEach(markerId => {
+            if (mapInstanceRef.current.getLayer(markerId)) {
+              mapInstanceRef.current.removeLayer(markerId);
+            }
+            if (mapInstanceRef.current.getSource(markerId)) {
+              mapInstanceRef.current.removeSource(markerId);
             }
           });
           markersRef.current = [];
 
           // Add new marker
-          const marker = window.L.marker(event.latlng).addTo(mapInstanceRef.current);
-          markersRef.current.push(marker);
+          const markerId = `marker-${Date.now()}`;
+          markersRef.current.push(markerId);
+          
+          mapInstanceRef.current.addSource(markerId, {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [lng, lat]
+              }
+            }
+          });
+
+          mapInstanceRef.current.addLayer({
+            id: markerId,
+            type: 'circle',
+            source: markerId,
+            paint: {
+              'circle-radius': 8,
+              'circle-color': '#ff4444',
+              'circle-stroke-color': '#ffffff',
+              'circle-stroke-width': 2
+            }
+          });
           
           // Call the callback using the ref
           if (onLocationSelectRef.current) {
-            onLocationSelectRef.current(event.latlng.lat, event.latlng.lng);
+            onLocationSelectRef.current(lat, lng);
           }
         });
 
-        // Force map to update its size
-        setTimeout(() => {
-          if (mapInstanceRef.current) {
-            mapInstanceRef.current.invalidateSize();
-            setIsMapReady(true);
-            setIsInitialized(true);
-            console.log('Map initialized successfully');
-          }
-        }, 100);
+        mapInstanceRef.current.on('load', () => {
+          setIsMapReady(true);
+          setIsInitialized(true);
+          console.log('MapLibre map initialized successfully');
+        });
 
       } catch (error) {
-        console.error('Error initializing map:', error);
+        console.error('Error initializing MapLibre map:', error);
         setTimeout(initMap, 500);
       }
     };
@@ -102,13 +132,19 @@ export default function GameMap({ choiceLocation, onLocationSelect }) {
     const centerLat = (minLat + maxLat) / 2;
     const centerLng = (minLong + maxLong) / 2;
 
-    console.log('Updating map center for location:', choiceLocation);
-    mapInstanceRef.current.setView([centerLat, centerLng], 10);
+    console.log('Updating MapLibre map center for location:', choiceLocation);
+    mapInstanceRef.current.flyTo({
+      center: [centerLng, centerLat],
+      zoom: 9
+    });
 
     // Clear existing markers when location changes
-    markersRef.current.forEach(marker => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.removeLayer(marker);
+    markersRef.current.forEach(markerId => {
+      if (mapInstanceRef.current.getLayer(markerId)) {
+        mapInstanceRef.current.removeLayer(markerId);
+      }
+      if (mapInstanceRef.current.getSource(markerId)) {
+        mapInstanceRef.current.removeSource(markerId);
       }
     });
     markersRef.current = [];
@@ -121,7 +157,7 @@ export default function GameMap({ choiceLocation, onLocationSelect }) {
         try {
           mapInstanceRef.current.remove();
         } catch (e) {
-          console.warn('Error removing map:', e);
+          console.warn('Error removing MapLibre map:', e);
         }
         mapInstanceRef.current = null;
       }
