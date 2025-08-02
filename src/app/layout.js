@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-        <link rel="stylesheet" href="https://unpkg.com/@photo-sphere-viewer/core@5.7.4/index.css" />
+        <link rel="stylesheet" href="https://unpkg.com/mapillary-js@4.1.2/dist/mapillary.css" />
       </head>
       <body className={inter.className}>
         {children}
@@ -35,11 +35,7 @@ export default function RootLayout({ children }) {
           strategy="beforeInteractive"
         />
         <Script
-          src="https://unpkg.com/three@0.152.0/build/three.min.js"
-          strategy="lazyOnload"
-        />
-        <Script
-          src="https://unpkg.com/@photo-sphere-viewer/core@5.7.4/index.js"
+          src="https://unpkg.com/mapillary-js@4.1.2/dist/mapillary.js"
           strategy="lazyOnload"
         />
       </body>

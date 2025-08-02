@@ -49,13 +49,13 @@ src/
 
 ### Core Game Flow
 1. **Image Fetching**: `src/utils/mapillary.js:getRandomMapillaryImage()` fetches random panoramic images from Mapillary API within predefined Vietnamese city boundaries
-2. **Display**: `src/components/features/PanoViewer.js` renders 360° images using Photo Sphere Viewer library with fallback to regular images
+2. **Display**: `src/components/features/PanoViewer.js` renders 360° images using MapillaryJS library with fallback to regular images
 3. **Interaction**: `src/components/features/GameMap.js` provides Leaflet-based interactive map for location guessing
 4. **Scoring**: Distance calculation using haversine formula in `src/utils/distance.js:calculateDistance()`
 
 ### Key Components
 - **GameMap**: Leaflet.js integration with click-based location selection, automatic centering based on city choice
-- **PanoViewer**: Photo Sphere Viewer wrapper with error handling and fallback display
+- **PanoViewer**: MapillaryJS wrapper with error handling and fallback display
 - **Game Page**: Main game orchestration with state management for loading, guessing, and results
 
 ### Data Structure
@@ -64,7 +64,7 @@ src/
 
 ### External Dependencies
 - **Leaflet**: Map rendering (loaded via CDN in layout.js)
-- **Photo Sphere Viewer**: 360° image display (loaded via CDN)
+- **MapillaryJS**: 360° street imagery display (loaded via CDN)
 - **Mapillary Graph API**: Street view image source with access token embedded
 
 ### State Management
@@ -74,15 +74,20 @@ Game state managed at page level with React hooks:
 - Distance calculation and result display
 
 ### Important Implementation Notes
-- Maps and Photo Sphere Viewer are loaded via CDN and initialized with retry logic
+- Maps and MapillaryJS are loaded via CDN and initialized with retry logic
 - Components use refs for DOM manipulation and cleanup
 - Mapillary API calls include retry logic for failed requests
 - Image fallback system handles panoramic vs regular image display
 
-### Recent Refactoring (Completed)
+### Recent Changes (Completed)
 - **Structure**: Migrated to standard Next.js `src/` directory structure
 - **Code Organization**: Separated utilities (`src/utils/`), constants (`src/constants/`), UI components (`src/components/ui/`), and feature components (`src/components/features/`)
 - **Import Optimization**: Updated all import paths and added index files for cleaner imports
 - **Configuration**: Updated `jsconfig.json` path aliases to work with new src structure
 - **Cleanup**: Removed 16 unused assets and redundant npm dependencies
+- **MapillaryJS Migration**: Replaced Photo Sphere Viewer with MapillaryJS for better native Mapillary integration
+  - Updated CDN imports in `src/app/layout.js` to use MapillaryJS v4.1.2
+  - Refactored `src/components/features/PanoViewer.js` to use MapillaryJS Viewer with imageId-based rendering
+  - Maintained fallback image display for error handling
+  - No changes needed to `src/utils/mapillary.js` as it already provides required imageId
 - Project now follows Next.js 14 best practices and is ready for TypeScript migration

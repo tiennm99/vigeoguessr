@@ -3,7 +3,7 @@ import { boundingBoxVN } from '@/constants/locations';
 /**
  * Fetches a random panoramic image from Mapillary API within the specified Vietnamese city bounds
  * @param {string} choiceLocation - The location code (e.g., 'HN', 'TPHCM')
- * @returns {Promise<Object|null>} Image data with coordinates and URL, or null if failed
+ * @returns {Promise<Object|null>} Image data with coordinates, URL, and ID for MapillaryJS, or null if failed
  */
 export async function getRandomMapillaryImage(choiceLocation) {
   const [minLong, minLat, maxLong, maxLat, delta] = boundingBoxVN[choiceLocation];

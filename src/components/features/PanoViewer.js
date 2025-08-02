@@ -10,37 +10,28 @@ export default function PanoViewer({ imageData, isLoading }) {
     if (!panoRef.current || !imageData) return;
 
     const initViewer = () => {
-      if (!window.PhotoSphereViewer?.Viewer) {
+      if (!window.mapillary?.Viewer) {
         setTimeout(initViewer, 100);
         return;
       }
 
       try {
         if (viewerRef.current) {
-          viewerRef.current.destroy();
+          viewerRef.current.remove();
         }
 
-        viewerRef.current = new window.PhotoSphereViewer.Viewer({
+        viewerRef.current = new window.mapillary.Viewer({
+          accessToken: 'MLY|24113623194974280|5bf83fa202912f1cc3210b2cf968fb65',
           container: panoRef.current,
-          panorama: imageData.url,
-          loadingImg: null,
-          defaultYaw: 0,
-          defaultZoomLvl: -60,
-          navbar: ['zoom', 'fullscreen'],
-          mousewheel: true,
-          touchmoveTwoFingers: true
+          imageId: imageData.id
         });
 
-        viewerRef.current.addEventListener('ready', () => {
-          console.log('Photo Sphere Viewer loaded successfully');
+        viewerRef.current.on('image', (image) => {
+          console.log('MapillaryJS image loaded successfully:', image.id);
         });
 
-        viewerRef.current.addEventListener('panorama-loaded', () => {
-          console.log('Panorama image loaded');
-        });
-
-        viewerRef.current.addEventListener('panorama-error', (error) => {
-          console.error('Error loading panorama:', error);
+        viewerRef.current.on('error', (error) => {
+          console.error('Error loading MapillaryJS image:', error);
           // Fallback to regular image
           if (panoRef.current) {
             panoRef.current.innerHTML = `
@@ -51,7 +42,7 @@ export default function PanoViewer({ imageData, isLoading }) {
           }
         });
       } catch (error) {
-        console.error('Error initializing Photo Sphere Viewer:', error);
+        console.error('Error initializing MapillaryJS:', error);
         // Fallback to regular image
         if (panoRef.current) {
           panoRef.current.innerHTML = `
@@ -67,7 +58,7 @@ export default function PanoViewer({ imageData, isLoading }) {
 
     return () => {
       if (viewerRef.current) {
-        viewerRef.current.destroy();
+        viewerRef.current.remove();
         viewerRef.current = null;
       }
     };
