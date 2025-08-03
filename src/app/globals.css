@@ -1,7 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Jersey+15:wght@400&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #05A38C;
+  --color-primary-hover: #048a76;
+  --color-background: #1a1a1a;
+  --color-background-secondary: #24453D;
+  --color-text: #e6f4e6;
+  --color-text-secondary: #ccc;
+  --font-jersey: "Jersey 15", cursive;
+  --font-courier: "Courier", monospace;
+}
 
 @layer base {
   * {

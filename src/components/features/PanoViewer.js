@@ -7,17 +7,96 @@ import 'mapillary-js/dist/mapillary.css';
 export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad }) {
   const panoRef = useRef(null);
   const viewerRef = useRef(null);
+  const currentImageIdRef = useRef(null);
+  const isInitializingRef = useRef(false);
 
+  // Clean up viewer on unmount only
   useEffect(() => {
-    if (!panoRef.current || !imageData) return;
+    return () => {
+      if (viewerRef.current) {
+        try {
+          // Only remove if navigable to avoid the error
+          if (viewerRef.current.isNavigable) {
+            viewerRef.current.remove();
+          } else {
+            // If not navigable, just clear the reference
+            console.log('Viewer not navigable during cleanup, skipping remove()');
+          }
+        } catch (error) {
+          // Ignore cleanup errors on unmount
+        }
+        viewerRef.current = null;
+      }
+    };
+  }, []);
 
-    const initViewer = async () => {
+  // Handle image changes
+  useEffect(() => {
+    if (!panoRef.current || !imageData || isLoading) return;
+    
+    // Skip if same image
+    if (currentImageIdRef.current === imageData.id) return;
+    
+    // Skip if already initializing
+    if (isInitializingRef.current) return;
+
+    const initOrUpdateViewer = async () => {
+      isInitializingRef.current = true;
+      currentImageIdRef.current = imageData.id;
+
       try {
+        // If viewer exists, try to navigate to new image instead of recreating
         if (viewerRef.current) {
-          viewerRef.current.remove();
+          try {
+            // Check if viewer is navigable before attempting moveTo
+            if (viewerRef.current.isNavigable) {
+              await viewerRef.current.moveTo(imageData.id);
+              isInitializingRef.current = false;
+              return;
+            } else {
+              console.log('Viewer is not navigable, will recreate');
+              // Wait for navigation to be possible or recreate
+              const checkNavigable = () => {
+                if (viewerRef.current && viewerRef.current.isNavigable) {
+                  viewerRef.current.moveTo(imageData.id).then(() => {
+                    isInitializingRef.current = false;
+                  }).catch(() => {
+                    // If moveTo fails, recreate viewer
+                    if (viewerRef.current) {
+                      viewerRef.current.remove();
+                      viewerRef.current = null;
+                      initOrUpdateViewer(); // Recreate
+                    }
+                  });
+                } else {
+                  // Viewer still not navigable, recreate immediately
+                  if (viewerRef.current) {
+                    viewerRef.current.remove();
+                    viewerRef.current = null;
+                  }
+                  // Continue with new viewer creation below
+                }
+              };
+              
+              // Give it a brief moment to become navigable
+              setTimeout(checkNavigable, 100);
+              return;
+            }
+          } catch (error) {
+            console.log('Navigation failed, will recreate viewer:', error.message);
+            // Only remove if viewer is navigable or wait for it to be
+            if (viewerRef.current && viewerRef.current.isNavigable) {
+              viewerRef.current.remove();
+              viewerRef.current = null;
+            } else {
+              console.log('Cannot remove non-navigable viewer, will replace');
+              viewerRef.current = null;
+            }
+          }
         }
 
-        viewerRef.current = new Viewer({
+        // Create new viewer
+        const newViewer = new Viewer({
           accessToken: process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN || 'MLY|24113623194974280|5bf83fa202912f1cc3210b2cf968fb65',
           container: panoRef.current,
           imageId: imageData.id,
@@ -41,12 +120,14 @@ export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad
           }
         });
 
-        viewerRef.current.on('image', async (image) => {
+        viewerRef.current = newViewer;
+
+        newViewer.on('image', async (image) => {
           console.log('MapillaryJS image loaded successfully:', image.id);
           
           try {
             // Get precise position from MapillaryJS
-            const precisePosition = await viewerRef.current.getPosition();
+            const precisePosition = await newViewer.getPosition();
             console.log('Precise MapillaryJS coordinates:', precisePosition);
             
             // Notify parent component of precise coordinates
@@ -62,7 +143,7 @@ export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad
           }
         });
 
-        viewerRef.current.on('error', (error) => {
+        newViewer.on('error', (error) => {
           console.error('Error loading MapillaryJS image:', error);
           // Fallback to regular image
           if (panoRef.current) {
@@ -77,6 +158,7 @@ export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad
             onPreciseLocationLoad(imageData.lat, imageData.lng);
           }
         });
+
       } catch (error) {
         console.error('Error initializing MapillaryJS:', error);
         // Fallback to regular image
@@ -91,17 +173,12 @@ export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad
         if (onPreciseLocationLoad) {
           onPreciseLocationLoad(imageData.lat, imageData.lng);
         }
+      } finally {
+        isInitializingRef.current = false;
       }
     };
 
-    initViewer();
-
-    return () => {
-      if (viewerRef.current) {
-        viewerRef.current.remove();
-        viewerRef.current = null;
-      }
-    };
+    initOrUpdateViewer();
   }, [imageData, onPreciseLocationLoad]);
 
   // Expose viewer instance for potential coordinate synchronization

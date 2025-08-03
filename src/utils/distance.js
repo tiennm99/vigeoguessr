@@ -1,34 +1,111 @@
 /**
- * Calculates the distance between two geographic coordinates using the Haversine formula
+ * Calculates straight-line distance between two coordinates using Haversine formula
  * @param {number} lat1 - Latitude of first point
  * @param {number} lon1 - Longitude of first point
  * @param {number} lat2 - Latitude of second point
  * @param {number} lon2 - Longitude of second point
  * @returns {number} Distance in meters, rounded to 1 decimal place
  */
-export function calculateDistance(lat1, lon1, lat2, lon2) {
+function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
   if (lat1 === lat2 && lon1 === lon2) {
     return 0;
   }
   
-  const radlat1 = Math.PI * lat1 / 180;
-  const radlat2 = Math.PI * lat2 / 180;
-  const theta = lon1 - lon2;
-  const radtheta = Math.PI * theta / 180;
-  
-  let dist = Math.sin(radlat1) * Math.sin(radlat2) + 
-             Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-  
-  if (dist > 1) {
-    dist = 1;
+  const R = 6371000; // Earth's radius in meters
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const distance = R * c;
+  return parseFloat(distance.toFixed(1));
+}
+
+/**
+ * Validates coordinates using OpenStreetMap Nominatim API
+ * @param {number} lat - Latitude
+ * @param {number} lon - Longitude
+ * @returns {Promise<boolean>} True if coordinates are valid and on land
+ */
+async function validateCoordinatesWithOSM(lat, lon) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=0`;
+    
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'VIGEOGUESSR/1.0 (https://vigeoguessr.com)'
+      }
+    });
+    
+    if (!response.ok) {
+      return false;
+    }
+    
+    const data = await response.json();
+    
+    // Check if we got a valid response (not water or empty)
+    return data && data.display_name && !data.error;
+    
+  } catch (error) {
+    console.warn('OSM validation failed:', error);
+    return true; // Assume valid if validation fails
+  }
+}
+
+/**
+ * Calculates straight-line distance between two geographic coordinates
+ * Uses OpenStreetMap for coordinate validation and Haversine formula for distance
+ * @param {number} lat1 - Latitude of first point
+ * @param {number} lon1 - Longitude of first point
+ * @param {number} lat2 - Latitude of second point
+ * @param {number} lon2 - Longitude of second point
+ * @returns {Promise<number>} Distance in meters, rounded to 1 decimal place
+ */
+export async function calculateDistance(lat1, lon1, lat2, lon2) {
+  if (lat1 === lat2 && lon1 === lon2) {
+    return 0;
   }
   
-  dist = Math.acos(dist);
-  dist = dist * 180 / Math.PI;
-  dist = dist * 60 * 1.1515;
-  dist = dist * 1609.34; // Convert to meters
+  // Validate input coordinates
+  if (!isValidCoordinate(lat1, lon1) || !isValidCoordinate(lat2, lon2)) {
+    throw new Error('Invalid coordinates provided');
+  }
   
-  return parseFloat(dist.toFixed(1));
+  try {
+    // Validate coordinates with OpenStreetMap (parallel requests)
+    const [valid1, valid2] = await Promise.all([
+      validateCoordinatesWithOSM(lat1, lon1),
+      validateCoordinatesWithOSM(lat2, lon2)
+    ]);
+    
+    if (!valid1 || !valid2) {
+      console.warn('One or both coordinates may be invalid (water/empty area)');
+    }
+    
+  } catch (error) {
+    console.warn('OSM validation failed, proceeding with calculation:', error);
+  }
+  
+  // Calculate straight-line distance using Haversine formula
+  return calculateHaversineDistance(lat1, lon1, lat2, lon2);
+}
+
+/**
+ * Validates if coordinates are within valid ranges
+ * @param {number} lat - Latitude
+ * @param {number} lon - Longitude
+ * @returns {boolean} True if coordinates are valid
+ */
+function isValidCoordinate(lat, lon) {
+  return typeof lat === 'number' && typeof lon === 'number' &&
+         lat >= -90 && lat <= 90 &&
+         lon >= -180 && lon <= 180 &&
+         !isNaN(lat) && !isNaN(lon);
 }
 
 /**

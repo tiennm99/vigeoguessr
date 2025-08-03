@@ -103,26 +103,26 @@ function GamePageContent() {
         setShowResultModal(true);
       } else {
         console.error('Failed to submit score');
-        const fallbackDistance = calculateDistance(
+        const fallbackDistance = await calculateDistance(
           guessLocation[0],
           guessLocation[1],
           trueLocation[0],
           trueLocation[1]
         );
         setDistance(fallbackDistance);
-        setPoints(calculatePoints(fallbackDistance));
+        setPoints(calculatePoints(fallbackDistance / 1000)); // Convert to km
         setShowResultModal(true);
       }
     } catch (error) {
       console.error('Error submitting score:', error);
-      const fallbackDistance = calculateDistance(
+      const fallbackDistance = await calculateDistance(
         guessLocation[0],
         guessLocation[1],
         trueLocation[0],
         trueLocation[1]
       );
       setDistance(fallbackDistance);
-      setPoints(calculatePoints(fallbackDistance));
+      setPoints(calculatePoints(fallbackDistance / 1000)); // Convert to km
       setShowResultModal(true);
     }
   };

@@ -24,8 +24,8 @@ export async function POST(request) {
     }
 
     const sessionId = `${username}_${Date.now()}`;
-    const distance = calculateDistance(guessLat, guessLng, trueLat, trueLng);
-    const points = calculatePoints(distance);
+    const distance = await calculateDistance(guessLat, guessLng, trueLat, trueLng);
+    const points = calculatePoints(distance / 1000); // Convert to km for points calculation
     
     const sessionData = {
       username,
