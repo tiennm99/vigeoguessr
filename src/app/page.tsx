@@ -22,13 +22,13 @@ export default function Home() {
     }
   }, []);
 
-  const handleUsernameSubmit = (newUsername) => {
+  const handleUsernameSubmit = (newUsername: string) => {
     setUsername(newUsername);
     localStorage.setItem('vigeoguessr_username', newUsername);
     setShowUsernameModal(false);
   };
 
-  const startGame = (location) => {
+  const startGame = (location: string) => {
     if (!username) {
       setShowUsernameModal(true);
       return;

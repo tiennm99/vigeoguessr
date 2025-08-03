@@ -1,14 +1,19 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { LOCATION_BOUNDS } from '@/constants/locations';
 
-export default function GameMap({ choiceLocation, onLocationSelect }) {
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const markersRef = useRef([]);
+interface GameMapProps {
+  choiceLocation: string;
+  onLocationSelect: (lat: number, lng: number) => void;
+}
+
+export default function GameMap({ choiceLocation, onLocationSelect }: GameMapProps) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<string[]>([]);
   const onLocationSelectRef = useRef(onLocationSelect);
   const [isMapReady, setIsMapReady] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -32,7 +37,7 @@ export default function GameMap({ choiceLocation, onLocationSelect }) {
         
         // Create new MapLibre map
         mapInstanceRef.current = new maplibregl.Map({
-          container: mapRef.current,
+          container: mapRef.current!,
           style: {
             version: 8,
             sources: {
@@ -56,16 +61,16 @@ export default function GameMap({ choiceLocation, onLocationSelect }) {
         });
 
         // Add click event listener
-        mapInstanceRef.current.on('click', (event) => {
+        mapInstanceRef.current.on('click', (event: maplibregl.MapMouseEvent) => {
           const { lng, lat } = event.lngLat;
           console.log('MapLibre map clicked at:', { lat, lng });
           
           // Clear existing markers
           markersRef.current.forEach(markerId => {
-            if (mapInstanceRef.current.getLayer(markerId)) {
+            if (mapInstanceRef.current?.getLayer(markerId)) {
               mapInstanceRef.current.removeLayer(markerId);
             }
-            if (mapInstanceRef.current.getSource(markerId)) {
+            if (mapInstanceRef.current?.getSource(markerId)) {
               mapInstanceRef.current.removeSource(markerId);
             }
           });
@@ -75,18 +80,19 @@ export default function GameMap({ choiceLocation, onLocationSelect }) {
           const markerId = `marker-${Date.now()}`;
           markersRef.current.push(markerId);
           
-          mapInstanceRef.current.addSource(markerId, {
+          mapInstanceRef.current?.addSource(markerId, {
             type: 'geojson',
             data: {
               type: 'Feature',
               geometry: {
                 type: 'Point',
                 coordinates: [lng, lat]
-              }
+              },
+              properties: {}
             }
           });
 
-          mapInstanceRef.current.addLayer({
+          mapInstanceRef.current?.addLayer({
             id: markerId,
             type: 'circle',
             source: markerId,
@@ -140,10 +146,10 @@ export default function GameMap({ choiceLocation, onLocationSelect }) {
 
     // Clear existing markers when location changes
     markersRef.current.forEach(markerId => {
-      if (mapInstanceRef.current.getLayer(markerId)) {
+      if (mapInstanceRef.current?.getLayer(markerId)) {
         mapInstanceRef.current.removeLayer(markerId);
       }
-      if (mapInstanceRef.current.getSource(markerId)) {
+      if (mapInstanceRef.current?.getSource(markerId)) {
         mapInstanceRef.current.removeSource(markerId);
       }
     });

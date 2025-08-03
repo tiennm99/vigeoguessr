@@ -10,13 +10,42 @@ const MAPILLARY_CONFIG = {
   DEFAULT_ACCESS_TOKEN: 'MLY|24113623194974280|5bf83fa202912f1cc3210b2cf968fb65',
   IMAGE_SIZE: 2048,
   TIMEOUT: 10000
-};
+} as const;
+
+interface Bounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
+
+interface Geometry {
+  coordinates: [number, number];
+}
+
+interface MapillaryImage {
+  id: string;
+  thumb_2048_url: string;
+  geometry: Geometry;
+  computed_geometry?: Geometry;
+}
+
+interface MapillaryResponse {
+  data: MapillaryImage[];
+}
+
+export interface MapillaryImageData {
+  id: string;
+  url: string;
+  lat: number;
+  lng: number;
+  coordinates: [number, number];
+}
 
 /**
  * Gets Mapillary access token from environment or default
- * @returns {string} Access token
  */
-function getAccessToken() {
+function getAccessToken(): string {
   return process.env.MAPILLARY_ACCESS_TOKEN || 
          process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN || 
          MAPILLARY_CONFIG.DEFAULT_ACCESS_TOKEN;
@@ -24,11 +53,11 @@ function getAccessToken() {
 
 /**
  * Fetches random Mapillary image within specified bounds
- * @param {Object} bounds - Geographic bounds {north, south, east, west}
- * @param {number} [limit=50] - Maximum number of images to fetch
- * @returns {Promise<Object|null>} Random image data or null if none found
  */
-export async function getRandomMapillaryImage(bounds, limit = 50) {
+export async function getRandomMapillaryImage(
+  bounds: Bounds, 
+  limit: number = 50
+): Promise<MapillaryImageData | null> {
   try {
     const accessToken = getAccessToken();
     const { north, south, east, west } = bounds;
@@ -53,7 +82,7 @@ export async function getRandomMapillaryImage(bounds, limit = 50) {
       throw new Error(`Mapillary API error: ${response.status} ${response.statusText}`);
     }
     
-    const data = await response.json();
+    const data: MapillaryResponse = await response.json();
     
     if (!data.data || data.data.length === 0) {
       console.warn('No Mapillary images found in bounds:', bounds);
@@ -77,16 +106,14 @@ export async function getRandomMapillaryImage(bounds, limit = 50) {
     
   } catch (error) {
     console.error('Error fetching Mapillary image:', error);
-    throw new Error(`Failed to fetch street view image: ${error.message}`);
+    throw new Error(`Failed to fetch street view image: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
 /**
  * Validates Mapillary image exists and is accessible
- * @param {string} imageId - Mapillary image ID
- * @returns {Promise<boolean>} True if image is valid and accessible
  */
-export async function validateMapillaryImage(imageId) {
+export async function validateMapillaryImage(imageId: string): Promise<boolean> {
   try {
     const accessToken = getAccessToken();
     const url = `${MAPILLARY_CONFIG.BASE_URL}/${imageId}?access_token=${accessToken}&fields=id`;

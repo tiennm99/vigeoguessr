@@ -14,15 +14,17 @@ const OSM_CONFIG = {
   BASE_URL: 'https://nominatim.openstreetmap.org',
   USER_AGENT: 'VIGEOGUESSR/1.0 (https://vigeoguessr.com)',
   TIMEOUT: 5000
-};
+} as const;
+
+interface OSMResponse {
+  display_name?: string;
+  error?: string;
+}
 
 /**
  * Validates if coordinates are within valid ranges
- * @param {number} latitude - Latitude coordinate
- * @param {number} longitude - Longitude coordinate
- * @returns {boolean} True if coordinates are valid
  */
-export function isValidCoordinate(latitude, longitude) {
+export function isValidCoordinate(latitude: number, longitude: number): boolean {
   return typeof latitude === 'number' && 
          typeof longitude === 'number' &&
          latitude >= -90 && latitude <= 90 &&
@@ -32,13 +34,13 @@ export function isValidCoordinate(latitude, longitude) {
 
 /**
  * Calculates straight-line distance between two coordinates using Haversine formula
- * @param {number} lat1 - Latitude of first point
- * @param {number} lon1 - Longitude of first point  
- * @param {number} lat2 - Latitude of second point
- * @param {number} lon2 - Longitude of second point
- * @returns {number} Distance in meters, rounded to 1 decimal place
  */
-export function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+export function calculateHaversineDistance(
+  lat1: number, 
+  lon1: number, 
+  lat2: number, 
+  lon2: number
+): number {
   if (lat1 === lat2 && lon1 === lon2) {
     return 0;
   }
@@ -59,11 +61,11 @@ export function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
 
 /**
  * Validates coordinates using OpenStreetMap Nominatim API
- * @param {number} latitude - Latitude coordinate
- * @param {number} longitude - Longitude coordinate
- * @returns {Promise<boolean>} True if coordinates are valid and on land
  */
-export async function validateCoordinateWithOSM(latitude, longitude) {
+export async function validateCoordinateWithOSM(
+  latitude: number, 
+  longitude: number
+): Promise<boolean> {
   try {
     const url = `${OSM_CONFIG.BASE_URL}/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=0`;
     
@@ -83,7 +85,7 @@ export async function validateCoordinateWithOSM(latitude, longitude) {
       return false;
     }
     
-    const data = await response.json();
+    const data: OSMResponse = await response.json();
     return data && data.display_name && !data.error;
     
   } catch (error) {
@@ -94,13 +96,13 @@ export async function validateCoordinateWithOSM(latitude, longitude) {
 
 /**
  * Calculates distance between two geographic coordinates with validation
- * @param {number} lat1 - Latitude of first point
- * @param {number} lon1 - Longitude of first point
- * @param {number} lat2 - Latitude of second point  
- * @param {number} lon2 - Longitude of second point
- * @returns {Promise<number>} Distance in meters, rounded to 1 decimal place
  */
-export async function calculateDistance(lat1, lon1, lat2, lon2) {
+export async function calculateDistance(
+  lat1: number, 
+  lon1: number, 
+  lat2: number, 
+  lon2: number
+): Promise<number> {
   // Validate input coordinates
   if (!isValidCoordinate(lat1, lon1) || !isValidCoordinate(lat2, lon2)) {
     throw new Error('Invalid coordinates provided');

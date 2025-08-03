@@ -21,14 +21,12 @@ export const SCORING_CONFIG = {
     POOR: 1,
     NONE: 0
   }
-};
+} as const;
 
 /**
  * Calculates points based on distance in meters
- * @param {number} distanceMeters - Distance in meters
- * @returns {number} Points (0-5 scale)
  */
-export function calculatePoints(distanceMeters) {
+export function calculatePoints(distanceMeters: number): number {
   const distanceKm = distanceMeters / 1000;
   const { DISTANCE_THRESHOLDS, POINTS } = SCORING_CONFIG;
   
@@ -43,10 +41,8 @@ export function calculatePoints(distanceMeters) {
 
 /**
  * Gets score description based on points
- * @param {number} points - Points earned (0-5)
- * @returns {string} Score description
  */
-export function getScoreDescription(points) {
+export function getScoreDescription(points: number): string {
   const { POINTS } = SCORING_CONFIG;
   
   switch (points) {
@@ -61,10 +57,8 @@ export function getScoreDescription(points) {
 
 /**
  * Formats distance for display
- * @param {number} distanceMeters - Distance in meters
- * @returns {string} Formatted distance string
  */
-export function formatDistance(distanceMeters) {
+export function formatDistance(distanceMeters: number): string {
   if (distanceMeters >= 1000) {
     return `${(distanceMeters / 1000).toFixed(1)} km`;
   }

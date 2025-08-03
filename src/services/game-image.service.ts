@@ -9,15 +9,24 @@ const IMAGE_CONFIG = {
   MAX_RETRIES: 3,
   RETRY_DELAY: 1000,
   TIMEOUT: 10000
-};
+} as const;
+
+export interface GameImageData {
+  id: string;
+  url: string;
+  lat: number;
+  lng: number;
+  coordinates: [number, number];
+  isPano?: boolean;
+}
 
 /**
  * Fetches a random panoramic image from server-side Mapillary API
- * @param {string} locationCode - The location code (e.g., 'HN', 'TPHCM')
- * @param {number} [maxRetries=3] - Maximum number of retry attempts
- * @returns {Promise<Object|null>} Image data with coordinates, URL, and ID, or null if failed
  */
-export async function fetchRandomGameImage(locationCode, maxRetries = IMAGE_CONFIG.MAX_RETRIES) {
+export async function fetchRandomGameImage(
+  locationCode: string, 
+  maxRetries: number = IMAGE_CONFIG.MAX_RETRIES
+): Promise<GameImageData | null> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       console.log(`Fetching panoramic image for ${locationCode} (attempt ${attempt}/${maxRetries})...`);
@@ -70,24 +79,25 @@ export async function fetchRandomGameImage(locationCode, maxRetries = IMAGE_CONF
 
 /**
  * Validates image data structure
- * @param {Object} imageData - Image data to validate
- * @returns {boolean} True if image data is valid
  */
-function isValidImageData(imageData) {
-  return imageData &&
-         typeof imageData.id === 'string' &&
-         typeof imageData.url === 'string' &&
-         typeof imageData.lat === 'number' &&
-         typeof imageData.lng === 'number' &&
-         Array.isArray(imageData.coordinates) &&
-         imageData.coordinates.length === 2;
+function isValidImageData(imageData: unknown): imageData is GameImageData {
+  if (typeof imageData !== 'object' || imageData === null) {
+    return false;
+  }
+  
+  const data = imageData as Record<string, unknown>;
+  
+  return typeof data.id === 'string' &&
+         typeof data.url === 'string' &&
+         typeof data.lat === 'number' &&
+         typeof data.lng === 'number' &&
+         Array.isArray(data.coordinates) &&
+         data.coordinates.length === 2;
 }
 
 /**
  * Creates a delay for retry logic
- * @param {number} ms - Milliseconds to delay
- * @returns {Promise<void>}
  */
-function delay(ms) {
+function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

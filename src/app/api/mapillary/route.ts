@@ -1,12 +1,19 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { LOCATION_BOUNDS } from '@/constants/locations';
 import { getRandomMapillaryImage } from '@/services/mapillary.service';
+
+interface Bounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
 
 /**
  * API route to fetch random Mapillary panoramic images
  * Keeps the API key secure on the server side
  */
-export async function GET(request) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const location = searchParams.get('location');
@@ -25,7 +32,7 @@ export async function GET(request) {
     const randomLat = Math.random() * (maxLat - minLat) + minLat;
     const randomLng = Math.random() * (maxLong - minLong) + minLong;
     
-    const bounds = {
+    const bounds: Bounds = {
       north: randomLat + delta,
       south: randomLat - delta,
       east: randomLng + delta,

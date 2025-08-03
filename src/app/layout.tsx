@@ -1,10 +1,11 @@
 import { Inter } from 'next/font/google'
 import ReactQueryProvider from '@/lib/react-query'
 import './globals.css'
+import { Metadata } from 'next'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'VIGEOGUESSR - Play Now',
   description: 'VIGEOGUESSR - Play a fun city guessing game. Choose your city and guess the location of the picture as accurately as possible!',
   keywords: 'GeoGuessr, city guessing game, Vietnam, Hanoi, Ho Chi Minh, play online',
@@ -21,7 +22,11 @@ export const metadata = {
   },
 }
 
-export default function RootLayout({ children }) {
+interface RootLayoutProps {
+  children: React.ReactNode
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <head>

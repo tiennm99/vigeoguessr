@@ -4,10 +4,30 @@ import { useEffect, useRef } from 'react';
 import { Viewer } from 'mapillary-js';
 import 'mapillary-js/dist/mapillary.css';
 
-export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad }) {
-  const panoRef = useRef(null);
-  const viewerRef = useRef(null);
-  const currentImageIdRef = useRef(null);
+interface ImageData {
+  id: string;
+  url: string;
+  lat: number;
+  lng: number;
+  [key: string]: unknown;
+}
+
+interface PanoViewerProps {
+  imageData: ImageData | null;
+  isLoading: boolean;
+  onPreciseLocationLoad?: (lat: number, lng: number) => void;
+}
+
+declare global {
+  interface Window {
+    mapillaryViewer?: Viewer;
+  }
+}
+
+export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad }: PanoViewerProps) {
+  const panoRef = useRef<HTMLDivElement>(null);
+  const viewerRef = useRef<Viewer | null>(null);
+  const currentImageIdRef = useRef<string | null>(null);
   const isInitializingRef = useRef(false);
 
   // Clean up viewer on unmount only
@@ -83,7 +103,7 @@ export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad
               return;
             }
           } catch (error) {
-            console.log('Navigation failed, will recreate viewer:', error.message);
+            console.log('Navigation failed, will recreate viewer:', error instanceof Error ? error.message : 'Unknown error');
             // Only remove if viewer is navigable or wait for it to be
             if (viewerRef.current && viewerRef.current.isNavigable) {
               viewerRef.current.remove();
@@ -98,7 +118,7 @@ export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad
         // Create new viewer
         const newViewer = new Viewer({
           accessToken: process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN || 'MLY|24113623194974280|5bf83fa202912f1cc3210b2cf968fb65',
-          container: panoRef.current,
+          container: panoRef.current!,
           imageId: imageData.id,
           component: {
             attribution: false,
@@ -179,15 +199,15 @@ export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad
     };
 
     initOrUpdateViewer();
-  }, [imageData, onPreciseLocationLoad]);
+  }, [imageData, onPreciseLocationLoad, isLoading]);
 
   // Expose viewer instance for potential coordinate synchronization
   useEffect(() => {
-    if (viewerRef.current && window) {
+    if (viewerRef.current && typeof window !== 'undefined') {
       window.mapillaryViewer = viewerRef.current;
     }
     return () => {
-      if (window) {
+      if (typeof window !== 'undefined') {
         delete window.mapillaryViewer;
       }
     };

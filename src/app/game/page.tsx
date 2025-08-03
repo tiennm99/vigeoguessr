@@ -11,17 +11,24 @@ import { fetchRandomGameImage } from '@/services/game-image.service';
 import { calculateDistance } from '@/services/geography.service';
 import { calculatePoints } from '@/services/scoring.service';
 
+interface ImageData {
+  id: string;
+  lat: number;
+  lng: number;
+  [key: string]: unknown;
+}
+
 function GamePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showDonateModal, setShowDonateModal] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [imageData, setImageData] = useState(null);
+  const [imageData, setImageData] = useState<ImageData | null>(null);
   const [choiceLocation, setChoiceLocation] = useState('HN');
   const [username, setUsername] = useState('');
-  const [trueLocation, setTrueLocation] = useState([0, 0]);
-  const [guessLocation, setGuessLocation] = useState([0, 0]);
+  const [trueLocation, setTrueLocation] = useState<[number, number]>([0, 0]);
+  const [guessLocation, setGuessLocation] = useState<[number, number]>([0, 0]);
   const [distance, setDistance] = useState(0);
   const [points, setPoints] = useState(0);
   const [hasGuessed, setHasGuessed] = useState(false);
@@ -67,13 +74,13 @@ function GamePageContent() {
     loadRandomImage();
   }, [loadRandomImage]);
 
-  const handleLocationSelect = useCallback((lat, lng) => {
+  const handleLocationSelect = useCallback((lat: number, lng: number) => {
     console.log('Location selected:', lat, lng);
     setGuessLocation([lat, lng]);
     setHasGuessed(true);
   }, []);
 
-  const handlePreciseLocationLoad = useCallback((lat, lng) => {
+  const handlePreciseLocationLoad = useCallback((lat: number, lng: number) => {
     console.log('Precise MapillaryJS coordinates loaded:', lat, lng);
     setTrueLocation([lat, lng]);
   }, []);

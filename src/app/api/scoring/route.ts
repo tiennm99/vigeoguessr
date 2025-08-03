@@ -1,12 +1,31 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { calculateDistance } from '@/services/geography.service';
 import { calculatePoints } from '@/services/scoring.service';
 
-const userSessions = new Map();
+interface ScoreRequest {
+  username: string;
+  guessLat: number;
+  guessLng: number;
+  trueLat: number;
+  trueLng: number;
+  imageId: string;
+}
 
-export async function POST(request) {
+interface SessionData {
+  username: string;
+  imageId: string;
+  guessLocation: [number, number];
+  trueLocation: [number, number];
+  distance: number;
+  points: number;
+  timestamp: string;
+}
+
+const userSessions = new Map<string, SessionData>();
+
+export async function POST(request: NextRequest) {
   try {
-    const { username, guessLat, guessLng, trueLat, trueLng, imageId } = await request.json();
+    const { username, guessLat, guessLng, trueLat, trueLng, imageId }: ScoreRequest = await request.json();
     
     if (!username || !guessLat || !guessLng || !trueLat || !trueLng || !imageId) {
       return NextResponse.json(
@@ -19,7 +38,7 @@ export async function POST(request) {
     const distance = await calculateDistance(guessLat, guessLng, trueLat, trueLng);
     const points = calculatePoints(distance); // Service expects meters
     
-    const sessionData = {
+    const sessionData: SessionData = {
       username,
       imageId,
       guessLocation: [guessLat, guessLng],
@@ -49,7 +68,7 @@ export async function POST(request) {
   }
 }
 
-export async function GET(request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const sessionId = searchParams.get('sessionId');
   

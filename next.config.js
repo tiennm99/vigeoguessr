@@ -5,7 +5,13 @@ const nextConfig = {
     unoptimized: true
   },
   experimental: {
-    optimizePackageImports: ['leaflet', '@photo-sphere-viewer/core']
+    optimizePackageImports: ['maplibre-gl', 'mapillary-js']
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
   }
 }
 
