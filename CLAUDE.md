@@ -12,15 +12,16 @@ VIGEOGUESSR is a Vietnamese geography guessing game built with Next.js 15 and Re
 
 ## 🛠️ Development Environment
 
-- **Language**: JavaScript (with jsconfig.json for IDE support)
+- **Language**: TypeScript (`^5.0.0`)
 - **Framework**: Next.js 15 (App Router)
 - **React**: React 19
-- **Styling**: Tailwind CSS (migrating from custom CSS)
+- **Styling**: Tailwind CSS
 - **Component Library**: shadcn/ui (for generic UI components)
 - **Specialized Libraries**: MapLibre GL JS + MapillaryJS (for mapping/street view)
 - **Data Fetching**: React Query (TanStack) for API calls
 - **Testing**: Jest + React Testing Library
-- **Linting**: ESLint
+- **Linting**: ESLint with `@typescript-eslint`
+- **Formatting**: Prettier
 - **Package Manager**: pnpm (preferred)
 
 ## 📂 Project Structure
@@ -28,38 +29,52 @@ VIGEOGUESSR is a Vietnamese geography guessing game built with Next.js 15 and Re
 ```
 src/
 ├── app/                     # Next.js App Router
-│   ├── layout.js
-│   ├── page.js
+│   ├── layout.tsx
+│   ├── page.tsx
 │   ├── game/
 │   └── api/                 # Server-side API routes
 ├── components/              # UI components (shadcn/ui + game-specific)
 │   ├── features/           # Game-specific components
-│   │   ├── GameMap.js      # MapLibre GL JS integration
-│   │   ├── PanoViewer.js   # MapillaryJS integration
-│   │   └── ResultModal.js  # Result display with map + street view
+│   │   ├── GameMap.tsx     # MapLibre GL JS integration
+│   │   ├── PanoViewer.tsx  # MapillaryJS integration
+│   │   └── ResultModal.tsx # Result display with map + street view
 │   └── ui/                 # shadcn/ui components
 ├── services/               # Service layer for external APIs and business logic
-│   ├── geography.service.js    # Coordinate validation and distance calculations
-│   ├── scoring.service.js      # Game scoring and point calculations
-│   ├── mapillary.service.js    # Mapillary API integration
-│   └── game-image.service.js   # Game image fetching logic
+│   ├── geography.service.ts    # Coordinate validation and distance calculations
+│   ├── scoring.service.ts      # Game scoring and point calculations
+│   ├── mapillary.service.ts    # Mapillary API integration
+│   └── game-image.service.ts   # Game image fetching logic
 ├── hooks/                   # Custom React hooks
-│   ├── useMapillary.js     # Image fetching with React Query
-│   └── useScoring.js       # Scoring API with React Query
-├── lib/                     # Utilities and API wrappers
+│   ├── useMapillary.ts     # Image fetching with React Query
+│   └── useScoring.ts       # Scoring API with React Query
+├── lib/                     # Client helpers, API wrappers, utilities
 ├── constants/               # Game constants (cities, locations)
 ├── styles/                  # Tailwind customizations
-├── tests/                   # Test files
+├── tests/                   # Unit and integration tests
 └── public/
 ```
+
+## 📁 Configuration Files
+
+Key configuration files in the project root:
+
+- `tsconfig.json` - TypeScript configuration
+- `tailwind.config.ts` - Tailwind CSS customization  
+- `.eslintrc.js` - ESLint with TypeScript rules
+- `postcss.config.js` - PostCSS configuration
+- `next.config.js` - Next.js configuration
+- `jest.config.js` - Jest testing configuration
+- `package.json` - Dependencies and scripts
 
 ## 📦 Installation & Setup
 
 - Tailwind CSS with PostCSS configuration
 - shadcn/ui: `npx shadcn-ui@latest init`
-- React Query: `<QueryClientProvider>` in app/layout.js
+- React Query: `<QueryClientProvider>` in app/layout.tsx
 - MapLibre GL JS: `pnpm add maplibre-gl`
 - MapillaryJS: `pnpm add mapillary-js`
+- TypeScript configuration with `tsconfig.json`
+- ESLint with TypeScript support
 
 ## ⚙️ Development Commands
 
@@ -74,8 +89,8 @@ src/
 
 ### API Data Fetching (Option A - Recommended)
 
-```javascript
-// hooks/useMapillary.js
+```typescript
+// hooks/useMapillary.ts
 const { data: imageData, isLoading } = useQuery({
   queryKey: ["mapillary", city],
   queryFn: () =>
@@ -83,9 +98,9 @@ const { data: imageData, isLoading } = useQuery({
   staleTime: 5 * 60 * 1000, // 5 minutes
 });
 
-// hooks/useScoring.js
+// hooks/useScoring.ts
 const scoreMutation = useMutation({
-  mutationFn: (scoreData) =>
+  mutationFn: (scoreData: ScoreData) =>
     fetch("/api/scoring", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -105,11 +120,16 @@ const scoreMutation = useMutation({
 
 ### Tailwind + Specialized Libraries
 
-```javascript
+```typescript
 // GameMap component with MapLibre GL JS
 import "maplibre-gl/dist/maplibre-gl.css";
 
-export default function GameMap() {
+interface GameMapProps {
+  choiceLocation: string;
+  onLocationSelect: (coords: [number, number]) => void;
+}
+
+export default function GameMap({ choiceLocation, onLocationSelect }: GameMapProps) {
   return (
     <div className="w-full h-96 rounded-lg border border-gray-200 overflow-hidden">
       <div ref={mapRef} className="w-full h-full" />
@@ -135,21 +155,21 @@ export default function GameMap() {
 
 ### Game-Specific Components
 
-```javascript
-// PanoViewer.js - Keep (MapillaryJS integration)
-// GameMap.js - Keep (MapLibre GL JS integration)
-// ResultModal.js - Keep but use shadcn/ui Button, Dialog internally
+```typescript
+// PanoViewer.tsx - Keep (MapillaryJS integration)
+// GameMap.tsx - Keep (MapLibre GL JS integration)
+// ResultModal.tsx - Keep but use shadcn/ui Button, Dialog internally
 ```
 
 ## 🧪 Testing Strategy
 
 ### Jest + React Testing Library
 
-```javascript
-// tests/GameMap.test.js
+```typescript
+// tests/GameMap.test.tsx
 import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import GameMap from "@/components/GameMap";
+import GameMap from "@/components/features/GameMap";
 
 // Mock MapLibre GL JS
 jest.mock("maplibre-gl", () => ({
@@ -180,9 +200,10 @@ test("renders game map container", () => {
 
 ## 📝 Code Style Standards
 
-- **JavaScript**: Use ES6+ features, prefer arrow functions
+- **TypeScript**: Use strict typing, prefer arrow functions, annotate return types
 - **Imports**: Group React → Next.js → libraries → local components
-- **Components**: Always destructure props, use meaningful names
+- **Components**: Always destructure props, use meaningful names, define interfaces
+- **Types**: Avoid `any` type, use `unknown` or strict generics
 - **Styling**: Prefer Tailwind utilities over custom CSS
 - **API**: Keep server logic in `/api` routes, client logic in hooks
 
@@ -272,24 +293,26 @@ Game state managed at page level with React hooks:
 ## Recent Implementation Updates
 
 ### Modern Tech Stack Migration (Latest)
+- **Language**: TypeScript (`^5.0.0`) with strict typing and interfaces
 - **Package Manager**: Migrated from npm to pnpm with updated scripts (dev, build, start, lint, format, test)
 - **Tailwind CSS**: Complete migration from custom CSS to Tailwind utilities with custom design tokens matching game theme
 - **shadcn/ui**: Installed and configured with utility functions, ready for UI component replacements
 - **React Query**: Added TanStack Query with QueryClientProvider in layout and custom hooks (`useMapillary`, `useScoring`)
 - **Testing Setup**: Configured Jest + React Testing Library with specialized mocks for MapLibre/MapillaryJS libraries
-- **Project Structure**: Added modern hooks/, lib/ directories following new architectural guidelines
-- **Development Environment**: Updated to modern toolchain with Prettier formatting and enhanced development experience
+- **Project Structure**: Added modern hooks/, lib/ directories following TypeScript architectural guidelines
+- **Development Environment**: Updated to modern toolchain with TypeScript, ESLint, Prettier formatting and enhanced DX
 
 ### Current Architecture Status
 - ✅ **Framework**: Next.js 15 + React 19
+- ✅ **Language**: TypeScript with strict configuration
 - ✅ **Styling**: Tailwind CSS with custom game design tokens
 - ✅ **Data Fetching**: React Query hooks for API management
-- ✅ **Testing**: Jest + RTL with library mocks
+- ✅ **Testing**: Jest + RTL with TypeScript and library mocks
 - ✅ **Package Management**: pnpm with modern scripts
-- 🚧 **Components**: Existing game components (GameMap, PanoViewer, ResultModal) preserved
+- 🚧 **Components**: Existing game components (GameMap, PanoViewer, ResultModal) preserved - ready for TypeScript migration
 - 🚧 **UI Components**: Ready for shadcn/ui migration (Header, DonateModal, UsernameModal)
 
-Project is now modernized and ready for continued development with industry-standard tooling.
+Project is now modernized with TypeScript and ready for continued development with industry-standard tooling.
 
 ## 🏗️ Service Layer Architecture
 
@@ -297,7 +320,7 @@ Project is now modernized and ready for continued development with industry-stan
 
 The project now uses a clean service layer architecture with specialized services:
 
-```javascript
+```typescript
 // Geography service for coordinate operations
 import { calculateDistance, isValidCoordinate } from '@/services/geography.service';
 
