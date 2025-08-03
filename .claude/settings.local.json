@@ -11,7 +11,8 @@
       "Bash(cp:*)",
       "Bash(curl:*)",
       "WebFetch",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(pnpm:*)"
     ],
     "deny": []
   }
