@@ -1,6 +1,10 @@
 'use client';
 
-export default function Header({ onDonateClick }) {
+interface HeaderProps {
+  onDonateClick: () => void;
+}
+
+export default function Header({ onDonateClick }: HeaderProps) {
   return (
     <header className="header">
       <div className="header-center">

@@ -1,5 +1,6 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
   images: {
     domains: ['graph.mapillary.com', 'maps.google.com', 'unpkg.com'],
     unoptimized: true
@@ -15,4 +16,4 @@ const nextConfig = {
   }
 }
 
-module.exports = nextConfig
+export default nextConfig

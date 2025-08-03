@@ -6,6 +6,24 @@ import { Viewer } from 'mapillary-js';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import 'mapillary-js/dist/mapillary.css';
 
+interface ImageData {
+  id: string;
+  url: string;
+  lat: number;
+  lng: number;
+  [key: string]: unknown;
+}
+
+interface ResultModalProps {
+  isOpen: boolean;
+  distance: number;
+  points: number;
+  trueLocation: [number, number];
+  guessLocation: [number, number];
+  imageData: ImageData | null;
+  onNextRound: () => void;
+}
+
 export default function ResultModal({ 
   isOpen, 
   distance, 
@@ -14,12 +32,12 @@ export default function ResultModal({
   guessLocation, 
   imageData,
   onNextRound 
-}) {
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const panoRef = useRef(null);
-  const viewerRef = useRef(null);
-  const markersRef = useRef([]);
+}: ResultModalProps) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<maplibregl.Map | null>(null);
+  const panoRef = useRef<HTMLDivElement>(null);
+  const viewerRef = useRef<Viewer | null>(null);
+  const markersRef = useRef<string[]>([]);
 
   useEffect(() => {
     if (!isOpen || !mapRef.current) return;
@@ -38,7 +56,7 @@ export default function ResultModal({
 
         // Create MapLibre map
         mapInstanceRef.current = new maplibregl.Map({
-          container: mapRef.current,
+          container: mapRef.current!,
           style: {
             version: 8,
             sources: {
@@ -62,6 +80,8 @@ export default function ResultModal({
         });
 
         mapInstanceRef.current.on('load', () => {
+          if (!mapInstanceRef.current) return;
+
           // Add true location marker (green)
           mapInstanceRef.current.addSource('true-location', {
             type: 'geojson',
@@ -70,7 +90,8 @@ export default function ResultModal({
               geometry: {
                 type: 'Point',
                 coordinates: [trueLng, trueLat]
-              }
+              },
+              properties: {}
             }
           });
 
@@ -94,7 +115,8 @@ export default function ResultModal({
               geometry: {
                 type: 'Point',
                 coordinates: [guessLng, guessLat]
-              }
+              },
+              properties: {}
             }
           });
 
@@ -118,7 +140,8 @@ export default function ResultModal({
               geometry: {
                 type: 'LineString',
                 coordinates: [[trueLng, trueLat], [guessLng, guessLat]]
-              }
+              },
+              properties: {}
             }
           });
 
@@ -173,7 +196,7 @@ export default function ResultModal({
 
         viewerRef.current = new Viewer({
           accessToken: process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN || 'MLY|24113623194974280|5bf83fa202912f1cc3210b2cf968fb65',
-          container: panoRef.current,
+          container: panoRef.current!,
           imageId: imageData.id,
           component: {
             attribution: false,
@@ -217,14 +240,14 @@ export default function ResultModal({
 
   if (!isOpen) return null;
 
-  const formatDistance = (dist) => {
+  const formatDistance = (dist: number): string => {
     if (dist > 1000) {
       return `${(dist / 1000).toFixed(2)} KM`;
     }
     return `${dist} M`;
   };
 
-  const getResultMessage = (dist, pts) => {
+  const getResultMessage = (dist: number, pts: number): string => {
     if (pts >= 5) return "Perfect! 🎯";
     if (pts >= 4) return "Excellent! 🎉";
     if (pts >= 3) return "Great job! 👍";

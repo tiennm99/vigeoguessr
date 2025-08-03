@@ -1,11 +1,17 @@
 'use client';
 
 import Image from 'next/image';
+import { MouseEvent } from 'react';
 
-export default function DonateModal({ isOpen, onClose }) {
+interface DonateModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function DonateModal({ isOpen, onClose }: DonateModalProps) {
   if (!isOpen) return null;
 
-  const handleBackdropClick = (e) => {
+  const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }

@@ -1,15 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, FormEvent, ChangeEvent } from 'react';
 
-export default function UsernameModal({ isOpen, onSubmit }) {
+interface UsernameModalProps {
+  isOpen: boolean;
+  onSubmit: (username: string) => void;
+}
+
+export default function UsernameModal({ isOpen, onSubmit }: UsernameModalProps) {
   const [username, setUsername] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (username.trim()) {
       onSubmit(username.trim());
     }
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
   };
 
   if (!isOpen) return null;
@@ -24,7 +33,7 @@ export default function UsernameModal({ isOpen, onSubmit }) {
           <input
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={handleInputChange}
             placeholder="Your username"
             className="username-input"
             maxLength={20}

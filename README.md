@@ -9,15 +9,15 @@ A Next.js-based Vietnamese geography guessing game where players guess the locat
 - 🎯 Interactive map for location guessing
 - 📊 Distance-based scoring system
 - 🖼️ 360° panoramic street view images using Photo Sphere Viewer
-- ⚡ Built with Next.js 14 and JavaScript for performance and simplicity
+- ⚡ Built with Next.js 15 and TypeScript for performance and type safety
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 with App Router
-- **Language**: JavaScript
-- **Styling**: CSS Modules with custom styling
-- **Maps**: Leaflet.js
-- **360° Images**: Photo Sphere Viewer
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript with strict type checking
+- **Styling**: Tailwind CSS with custom design tokens
+- **Maps**: MapLibre GL JS
+- **360° Images**: MapillaryJS
 - **Image API**: Mapillary Graph API
 
 ## Getting Started
@@ -60,24 +60,24 @@ npm start
 ├── app/                    # Next.js app directory
 │   ├── game/              # Game page
 │   ├── globals.css        # Global styles
-│   ├── layout.js          # Root layout
-│   └── page.js            # Home page
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Home page
 ├── components/            # Reusable React components
-│   ├── DonateModal.js
-│   ├── GameMap.js
-│   ├── Header.js
-│   ├── PanoViewer.js
-│   └── ResultModal.js
+│   ├── DonateModal.tsx
+│   ├── GameMap.tsx
+│   ├── Header.tsx
+│   ├── PanoViewer.tsx
+│   └── ResultModal.tsx
 ├── lib/                   # Utility functions
-│   └── gameUtils.js       # Game logic and API calls
+│   └── utils.ts           # Utility functions
 └── public/               # Static assets
 ```
 
 ## Key Improvements from Original
 
-- **Modern Framework**: Migrated from vanilla HTML/JS to Next.js with JavaScript
+- **Modern Framework**: Migrated from vanilla HTML/JS to Next.js with TypeScript
 - **Component-Based Architecture**: Modular, reusable React components
-- **Clean Code**: Well-structured JavaScript with proper organization
+- **Clean Code**: Well-structured TypeScript with proper type safety and organization
 - **Code Deduplication**: Eliminated duplicate code and consolidated utilities
 - **Performance**: Optimized with Next.js built-in optimizations
 - **Maintainability**: Cleaner code structure and separation of concerns
