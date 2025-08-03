@@ -5,6 +5,10 @@ import maplibregl from 'maplibre-gl';
 import { Viewer } from 'mapillary-js';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import 'mapillary-js/dist/mapillary.css';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowRight, Trophy, MapPin, Target } from 'lucide-react';
 
 interface ImageData {
   id: string;
@@ -242,9 +246,9 @@ export default function ResultModal({
 
   const formatDistance = (dist: number): string => {
     if (dist > 1000) {
-      return `${(dist / 1000).toFixed(2)} KM`;
+      return `${(dist / 1000).toFixed(2)} km`;
     }
-    return `${dist} M`;
+    return `${Math.round(dist)} m`;
   };
 
   const getResultMessage = (dist: number, pts: number): string => {
@@ -256,37 +260,106 @@ export default function ResultModal({
     return "Keep practicing! 💪";
   };
 
+  const getScoreColor = (pts: number): string => {
+    if (pts >= 5) return "bg-green-500";
+    if (pts >= 4) return "bg-blue-500";
+    if (pts >= 3) return "bg-yellow-500";
+    if (pts >= 2) return "bg-orange-500";
+    if (pts >= 1) return "bg-red-400";
+    return "bg-gray-500";
+  };
+
   return (
-    <div className="modal" style={{ display: 'block' }}>
-      <div className="modal-content" style={{ maxWidth: '90vw', width: '800px' }}>
-        <div className="score-text">RESULT</div>
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '15px' }}>
-          <span className="distance-text">{formatDistance(distance)}</span>
-          <div style={{ 
-            background: '#05A38C', 
-            padding: '8px 16px', 
-            borderRadius: '8px',
-            fontFamily: 'Jersey 15, cursive',
-            fontSize: '24px',
-            color: 'white'
-          }}>
-            {points} POINTS
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm">
+      <div className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-4xl translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
+        <div className="flex flex-col space-y-6">
+          {/* Header */}
+          <Card>
+            <CardHeader className="text-center">
+              <div className="flex items-center justify-center mb-2">
+                <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-3 rounded-full">
+                  <Trophy className="h-8 w-8 text-white" />
+                </div>
+              </div>
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Game Result
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-center space-x-8">
+                <div className="text-center">
+                  <div className="text-sm font-medium text-muted-foreground mb-2">Distance</div>
+                  <Badge variant="outline" className="text-lg px-4 py-2">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    {formatDistance(distance)}
+                  </Badge>
+                </div>
+                
+                <div className="text-center">
+                  <div className="text-sm font-medium text-muted-foreground mb-2">Score</div>
+                  <Badge className={`text-lg px-4 py-2 text-white ${getScoreColor(points)}`}>
+                    <Target className="h-4 w-4 mr-2" />
+                    {points} POINTS
+                  </Badge>
+                </div>
+              </div>
+              
+              <div className="mt-6 text-center">
+                <Badge variant="secondary" className="text-lg px-6 py-2">
+                  {getResultMessage(distance, points)}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Maps Container */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-80">
+            <Card className="overflow-hidden">
+              <CardHeader className="py-3">
+                <CardTitle className="text-sm flex items-center space-x-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>Result Map</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 h-full">
+                <div ref={mapRef} className="h-full w-full" />
+              </CardContent>
+            </Card>
+            
+            <Card className="overflow-hidden">
+              <CardHeader className="py-3">
+                <CardTitle className="text-sm flex items-center space-x-2">
+                  <Target className="h-4 w-4" />
+                  <span>Explore Location</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 h-full">
+                <div ref={panoRef} className="h-full w-full" />
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Instructions */}
+          <Card className="bg-muted/50">
+            <CardContent className="pt-6">
+              <p className="text-center text-sm text-muted-foreground">
+                You can now explore around the actual location using the street view! Use your mouse to look around and navigate.
+              </p>
+            </CardContent>
+          </Card>
+          
+          {/* Action Button */}
+          <div className="flex justify-center">
+            <Button 
+              onClick={onNextRound}
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg font-semibold hover:scale-105"
+            >
+              Next Round
+              <ArrowRight className="h-5 w-5 ml-2" />
+            </Button>
           </div>
         </div>
-        
-        <div style={{ display: 'flex', gap: '15px', height: '300px', marginBottom: '15px' }}>
-          <div ref={mapRef} style={{ flex: 1, minHeight: '300px' }}></div>
-          <div ref={panoRef} style={{ flex: 1, minHeight: '300px', borderRadius: '8px' }}></div>
-        </div>
-        
-        <p style={{ marginBottom: '15px' }}>{getResultMessage(distance, points)}</p>
-        <p style={{ fontSize: '14px', color: '#ccc', marginBottom: '15px' }}>
-          You can now explore around the actual location using the street view!
-        </p>
-        
-        <button onClick={onNextRound} className="next-btn">
-          <div className="next-text">NEXT ROUND</div>
-        </button>
       </div>
     </div>
   );

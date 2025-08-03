@@ -215,18 +215,11 @@ export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad
 
   if (isLoading) {
     return (
-      <div className="pano" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            border: '4px solid #f3f3f3',
-            borderTop: '4px solid #3498db',
-            borderRadius: '50%',
-            width: '40px',
-            height: '40px',
-            animation: 'spin 2s linear infinite',
-            margin: '0 auto 15px'
-          }}></div>
-          <div style={{ color: '#666', fontSize: '16px' }}>Loading image...</div>
+      <div className="pano flex items-center justify-center bg-muted/50 rounded-lg border-2 border-dashed border-muted-foreground/25">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <div className="text-muted-foreground font-medium">Loading street view...</div>
+          <div className="text-sm text-muted-foreground">Getting the perfect angle for you</div>
         </div>
       </div>
     );
@@ -234,10 +227,11 @@ export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad
 
   if (!imageData) {
     return (
-      <div className="pano" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ textAlign: 'center', color: '#e74c3c' }}>
-          <div style={{ fontSize: '18px', marginBottom: '10px' }}>⚠️ Error loading image</div>
-          <div style={{ fontSize: '14px' }}>Please try again</div>
+      <div className="pano flex items-center justify-center bg-destructive/10 rounded-lg border-2 border-dashed border-destructive/25">
+        <div className="text-center space-y-2">
+          <div className="text-4xl">⚠️</div>
+          <div className="text-lg font-semibold text-destructive">Error loading image</div>
+          <div className="text-sm text-muted-foreground">Please try again or select a different location</div>
         </div>
       </div>
     );
