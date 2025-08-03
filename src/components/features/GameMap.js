@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { boundingBoxVN } from '@/constants/locations';
+import { LOCATION_BOUNDS } from '@/constants/locations';
 
 export default function GameMap({ choiceLocation, onLocationSelect }) {
   const mapRef = useRef(null);
@@ -24,7 +24,7 @@ export default function GameMap({ choiceLocation, onLocationSelect }) {
 
     const initMap = () => {
       try {
-        const [minLong, minLat, maxLong, maxLat] = boundingBoxVN[choiceLocation];
+        const [minLong, minLat, maxLong, maxLat] = LOCATION_BOUNDS[choiceLocation];
         const centerLat = (minLat + maxLat) / 2;
         const centerLng = (minLong + maxLong) / 2;
 
@@ -128,7 +128,7 @@ export default function GameMap({ choiceLocation, onLocationSelect }) {
   useEffect(() => {
     if (!mapInstanceRef.current || !isInitialized) return;
 
-    const [minLong, minLat, maxLong, maxLat] = boundingBoxVN[choiceLocation];
+    const [minLong, minLat, maxLong, maxLat] = LOCATION_BOUNDS[choiceLocation];
     const centerLat = (minLat + maxLat) / 2;
     const centerLng = (minLong + maxLong) / 2;
 

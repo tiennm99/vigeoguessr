@@ -1,16 +1,8 @@
 import { NextResponse } from 'next/server';
-import { calculateDistance } from '@/utils/distance';
+import { calculateDistance } from '@/services/geography.service';
+import { calculatePoints } from '@/services/scoring.service';
 
 const userSessions = new Map();
-
-function calculatePoints(distanceKm) {
-  if (distanceKm > 1) return 0;
-  if (distanceKm > 0.5) return 1;  
-  if (distanceKm > 0.2) return 2;
-  if (distanceKm > 0.1) return 3;
-  if (distanceKm > 0.05) return 4;
-  return 5;
-}
 
 export async function POST(request) {
   try {
@@ -25,7 +17,7 @@ export async function POST(request) {
 
     const sessionId = `${username}_${Date.now()}`;
     const distance = await calculateDistance(guessLat, guessLng, trueLat, trueLng);
-    const points = calculatePoints(distance / 1000); // Convert to km for points calculation
+    const points = calculatePoints(distance); // Service expects meters
     
     const sessionData = {
       username,

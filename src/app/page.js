@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/ui/Header';
 import DonateModal from '@/components/ui/DonateModal';
 import UsernameModal from '@/components/ui/UsernameModal';
-import { locationNames } from '@/constants/locations';
+import { LOCATION_NAMES } from '@/constants/locations';
 
 export default function Home() {
   const [showDonateModal, setShowDonateModal] = useState(false);
@@ -66,7 +66,7 @@ export default function Home() {
               </div>
 
               <div className="right-panel">
-                {Object.entries(locationNames).map(([key, name]) => (
+                {Object.entries(LOCATION_NAMES).map(([key, name]) => (
                   <button
                     key={key}
                     className="bridge-btn"

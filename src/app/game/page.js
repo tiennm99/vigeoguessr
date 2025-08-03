@@ -7,8 +7,9 @@ import DonateModal from '@/components/ui/DonateModal';
 import PanoViewer from '@/components/features/PanoViewer';
 import GameMap from '@/components/features/GameMap';
 import ResultModal from '@/components/features/ResultModal';
-import { getRandomMapillaryImage } from '@/utils/mapillary';
-import { calculateDistance, calculatePoints } from '@/utils/distance';
+import { fetchRandomGameImage } from '@/services/game-image.service';
+import { calculateDistance } from '@/services/geography.service';
+import { calculatePoints } from '@/services/scoring.service';
 
 function GamePageContent() {
   const router = useRouter();
@@ -28,7 +29,7 @@ function GamePageContent() {
   const loadRandomImage = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await getRandomMapillaryImage(choiceLocation);
+      const data = await fetchRandomGameImage(choiceLocation);
       if (data) {
         setImageData(data);
         setTrueLocation([data.lat, data.lng]);
@@ -110,7 +111,7 @@ function GamePageContent() {
           trueLocation[1]
         );
         setDistance(fallbackDistance);
-        setPoints(calculatePoints(fallbackDistance / 1000)); // Convert to km
+        setPoints(calculatePoints(fallbackDistance)); // Service expects meters
         setShowResultModal(true);
       }
     } catch (error) {

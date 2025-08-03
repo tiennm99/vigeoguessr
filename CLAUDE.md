@@ -33,16 +33,21 @@ src/
 │   ├── game/
 │   └── api/                 # Server-side API routes
 ├── components/              # UI components (shadcn/ui + game-specific)
-│   ├── GameMap.js          # MapLibre GL JS integration
-│   ├── PanoViewer.js       # MapillaryJS integration
-│   ├── ResultModal.js      # Result display with map + street view
+│   ├── features/           # Game-specific components
+│   │   ├── GameMap.js      # MapLibre GL JS integration
+│   │   ├── PanoViewer.js   # MapillaryJS integration
+│   │   └── ResultModal.js  # Result display with map + street view
 │   └── ui/                 # shadcn/ui components
+├── services/               # Service layer for external APIs and business logic
+│   ├── geography.service.js    # Coordinate validation and distance calculations
+│   ├── scoring.service.js      # Game scoring and point calculations
+│   ├── mapillary.service.js    # Mapillary API integration
+│   └── game-image.service.js   # Game image fetching logic
 ├── hooks/                   # Custom React hooks
 │   ├── useMapillary.js     # Image fetching with React Query
 │   └── useScoring.js       # Scoring API with React Query
 ├── lib/                     # Utilities and API wrappers
 ├── constants/               # Game constants (cities, locations)
-├── utils/                   # Utility functions
 ├── styles/                  # Tailwind customizations
 ├── tests/                   # Test files
 └── public/
@@ -229,10 +234,12 @@ This project uses a carefully chosen combination of specialized libraries rather
 
 **Technical Implementation:**
 
-- **Image Fetching**: `src/utils/mapillary.js:getRandomMapillaryImage()` fetches random panoramic images via server-side API
+- **Image Fetching**: `src/services/game-image.service.js` handles client-side image fetching with retry logic
+- **API Integration**: `src/services/mapillary.service.js` provides server-side Mapillary API integration
 - **Display**: `src/components/features/PanoViewer.js` renders raw 360° images using MapillaryJS npm module
 - **Interaction**: `src/components/features/GameMap.js` provides MapLibre GL JS-based interactive map for location guessing
-- **Scoring**: Enhanced distance calculation with point system in `src/utils/distance.js:calculateDistance()`
+- **Scoring**: `src/services/scoring.service.js` handles point calculation with configurable thresholds
+- **Geography**: `src/services/geography.service.js` provides distance calculation with OpenStreetMap validation
 - **Session Management**: Per-user session tracking for concurrent multi-player support
 
 ### Key Components
@@ -244,8 +251,9 @@ This project uses a carefully chosen combination of specialized libraries rather
 
 ### Data Structure
 
-- City boundaries defined in `src/constants/locations.js:boundingBoxVN` object with coordinates and delta values for API queries
+- City boundaries defined in `src/constants/locations.js:LOCATION_BOUNDS` object with coordinates and delta values for API queries
 - Location codes: HN (Hanoi), TPHCM (Ho Chi Minh City), HP (Hai Phong), ND (Nam Dinh), DN (Da Nang), DL (Dalat), DHLA (Duc Hoa)
+- Constants organized with enums: `LOCATION_CODES`, `LOCATION_BOUNDS`, `LOCATION_NAMES`
 
 ### External Dependencies
 
@@ -282,3 +290,36 @@ Game state managed at page level with React hooks:
 - 🚧 **UI Components**: Ready for shadcn/ui migration (Header, DonateModal, UsernameModal)
 
 Project is now modernized and ready for continued development with industry-standard tooling.
+
+## 🏗️ Service Layer Architecture
+
+### Service Organization
+
+The project now uses a clean service layer architecture with specialized services:
+
+```javascript
+// Geography service for coordinate operations
+import { calculateDistance, isValidCoordinate } from '@/services/geography.service';
+
+// Scoring service for game mechanics
+import { calculatePoints, getScoreDescription, formatDistance } from '@/services/scoring.service';
+
+// Mapillary service for street view integration
+import { getRandomMapillaryImage, validateMapillaryImage } from '@/services/mapillary.service';
+
+// Game image service for client-side image fetching
+import { fetchRandomGameImage } from '@/services/game-image.service';
+```
+
+### Service Benefits
+
+- **Separation of Concerns**: Each service handles a specific domain
+- **Testability**: Services can be tested in isolation
+- **Reusability**: Services can be imported across components
+- **Type Safety**: JSDoc documentation provides IDE autocomplete
+- **Error Handling**: Consistent error patterns across services
+- **Configuration**: Centralized configuration objects
+
+### Migration from Legacy Utils
+
+The legacy `src/utils/` directory has been completely removed. All functionality has been migrated to the service layer with improved error handling, validation, and documentation.
