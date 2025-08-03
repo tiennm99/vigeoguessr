@@ -2,17 +2,23 @@
 
 import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
+import { Viewer } from 'mapillary-js';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import 'mapillary-js/dist/mapillary.css';
 
 export default function ResultModal({ 
   isOpen, 
   distance, 
+  points,
   trueLocation, 
   guessLocation, 
+  imageData,
   onNextRound 
 }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const panoRef = useRef(null);
+  const viewerRef = useRef(null);
   const markersRef = useRef([]);
 
   useEffect(() => {
@@ -155,6 +161,60 @@ export default function ResultModal({
     };
   }, [isOpen, trueLocation, guessLocation]);
 
+  // Initialize MapillaryJS viewer in result phase with navigation enabled
+  useEffect(() => {
+    if (!isOpen || !panoRef.current || !imageData) return;
+
+    const initResultViewer = async () => {
+      try {
+        if (viewerRef.current) {
+          viewerRef.current.remove();
+        }
+
+        viewerRef.current = new Viewer({
+          accessToken: process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN || 'MLY|24113623194974280|5bf83fa202912f1cc3210b2cf968fb65',
+          container: panoRef.current,
+          imageId: imageData.id,
+          component: {
+            attribution: false,
+            bearing: true,
+            cache: false,
+            cover: false,
+            direction: true,
+            image: true,
+            keyboard: true,
+            loading: true,
+            marker: false,
+            mouse: true,
+            pointer: true,
+            popup: false,
+            sequence: true,
+            spatial: false,
+            tag: false,
+            zoom: true
+          }
+        });
+
+        viewerRef.current.on('image', (image) => {
+          console.log('Result phase MapillaryJS loaded with navigation:', image.id);
+        });
+
+      } catch (error) {
+        console.error('Error initializing result MapillaryJS viewer:', error);
+      }
+    };
+
+    const timer = setTimeout(initResultViewer, 200);
+
+    return () => {
+      clearTimeout(timer);
+      if (viewerRef.current) {
+        viewerRef.current.remove();
+        viewerRef.current = null;
+      }
+    };
+  }, [isOpen, imageData]);
+
   if (!isOpen) return null;
 
   const formatDistance = (dist) => {
@@ -164,22 +224,43 @@ export default function ResultModal({
     return `${dist} M`;
   };
 
-  const getResultMessage = (dist) => {
-    if (dist > 1000) {
-      return "Hmm! Nice try.";
-    } else if (dist > 200) {
-      return "Good job!";
-    }
-    return "Excellent!";
+  const getResultMessage = (dist, pts) => {
+    if (pts >= 5) return "Perfect! 🎯";
+    if (pts >= 4) return "Excellent! 🎉";
+    if (pts >= 3) return "Great job! 👍";
+    if (pts >= 2) return "Good guess! 👌";
+    if (pts >= 1) return "Nice try! 🎯";
+    return "Keep practicing! 💪";
   };
 
   return (
     <div className="modal" style={{ display: 'block' }}>
-      <div className="modal-content">
+      <div className="modal-content" style={{ maxWidth: '90vw', width: '800px' }}>
         <div className="score-text">RESULT</div>
-        <span className="distance-text">{formatDistance(distance)}</span>
-        <div className="container" ref={mapRef} style={{ height: '300px' }}></div>
-        <p>{getResultMessage(distance)}</p>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '15px' }}>
+          <span className="distance-text">{formatDistance(distance)}</span>
+          <div style={{ 
+            background: '#05A38C', 
+            padding: '8px 16px', 
+            borderRadius: '8px',
+            fontFamily: 'Jersey 15, cursive',
+            fontSize: '24px',
+            color: 'white'
+          }}>
+            {points} POINTS
+          </div>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '15px', height: '300px', marginBottom: '15px' }}>
+          <div ref={mapRef} style={{ flex: 1, minHeight: '300px' }}></div>
+          <div ref={panoRef} style={{ flex: 1, minHeight: '300px', borderRadius: '8px' }}></div>
+        </div>
+        
+        <p style={{ marginBottom: '15px' }}>{getResultMessage(distance, points)}</p>
+        <p style={{ fontSize: '14px', color: '#ccc', marginBottom: '15px' }}>
+          You can now explore around the actual location using the street view!
+        </p>
+        
         <button onClick={onNextRound} className="next-btn">
           <div className="next-text">NEXT ROUND</div>
         </button>

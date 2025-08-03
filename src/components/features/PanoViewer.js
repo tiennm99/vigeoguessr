@@ -20,7 +20,25 @@ export default function PanoViewer({ imageData, isLoading, onPreciseLocationLoad
         viewerRef.current = new Viewer({
           accessToken: process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN || 'MLY|24113623194974280|5bf83fa202912f1cc3210b2cf968fb65',
           container: panoRef.current,
-          imageId: imageData.id
+          imageId: imageData.id,
+          component: {
+            attribution: false,
+            bearing: false,
+            cache: false,
+            cover: false,
+            direction: false,
+            image: true,
+            keyboard: false,
+            loading: true,
+            marker: false,
+            mouse: true,
+            pointer: false,
+            popup: false,
+            sequence: false,
+            spatial: false,
+            tag: false,
+            zoom: true
+          }
         });
 
         viewerRef.current.on('image', async (image) => {

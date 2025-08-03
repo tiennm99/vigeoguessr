@@ -56,10 +56,34 @@ src/
 This project uses a carefully chosen combination of specialized libraries rather than trying to force a single library to handle all use cases. This approach provides superior user experience, maintainability, and performance.
 
 ### Core Game Flow
-1. **Image Fetching**: `src/utils/mapillary.js:getRandomMapillaryImage()` fetches random panoramic images via server-side API (`src/app/api/mapillary/route.js`) within predefined Vietnamese city boundaries
-2. **Display**: `src/components/features/PanoViewer.js` renders 360° images using MapillaryJS npm module with fallback to regular images
-3. **Interaction**: `src/components/features/GameMap.js` provides MapLibre GL JS-based interactive map for location guessing
-4. **Scoring**: Distance calculation using haversine formula in `src/utils/distance.js:calculateDistance()`
+
+**Multi-User Gameplay Experience:**
+1. **User Entry**: Home page checks localStorage for cached username, displays popup if not found
+2. **City Selection**: User selects from available Vietnamese cities on home page
+3. **Game Initialization**: Navigate to game scene with selected city parameter
+4. **Image Loading**: Server provides random panoramic image from city bounds via `src/app/api/mapillary/route.js`
+5. **Gameplay**: 
+   - Display raw panoramic image without location metadata
+   - Show city overview map for location guessing
+   - User submits guess location with username
+6. **Scoring System**: Server calculates distance-based points (0-5 scale) per user session:
+   - 0-50m = 5 points
+   - 50m-100m = 4 points
+   - 100m-200m = 3 points
+   - 200m-500m = 2 points
+   - 500m-1km = 1 point
+   - >1km = 0 points
+7. **Results**: 
+   - Show guess location, actual location, distance, and points
+   - Enable MapillaryJS navigation around actual location
+   - "Next" button continues to next round
+
+**Technical Implementation:**
+- **Image Fetching**: `src/utils/mapillary.js:getRandomMapillaryImage()` fetches random panoramic images via server-side API
+- **Display**: `src/components/features/PanoViewer.js` renders raw 360° images using MapillaryJS npm module  
+- **Interaction**: `src/components/features/GameMap.js` provides MapLibre GL JS-based interactive map for location guessing
+- **Scoring**: Enhanced distance calculation with point system in `src/utils/distance.js:calculateDistance()`
+- **Session Management**: Per-user session tracking for concurrent multi-player support
 
 ### Key Components
 - **GameMap**: MapLibre GL JS integration with click-based location selection, automatic centering based on city choice, and native coordinate synchronization
@@ -146,6 +170,17 @@ Game state managed at page level with React hooks:
 - Image fallback system handles panoramic vs regular image display
 
 ### Recent Changes (Completed)
+
+**Multi-User Gameplay Implementation (Latest):**
+- **Username System**: Added localStorage-cached username with popup modal for first-time users
+- **City Selection Interface**: Enhanced home page with username-aware city selection
+- **Per-User Scoring API**: Created `/api/scoring` endpoint with session tracking for concurrent multi-player support
+- **Distance-Based Point System**: Implemented 0-5 point scale based on accuracy (0-50m=5pts, 50m-100m=4pts, 100m-200m=3pts, 200m-500m=2pts, 500m-1km=1pt, >1km=0pts)
+- **Raw Image Display**: Modified PanoViewer to disable navigation controls during gameplay, preventing location information exposure
+- **Enhanced Result Modal**: Added points display, side-by-side map/street view layout, and enabled MapillaryJS navigation in result phase
+- **Game Flow Integration**: Updated game page to handle username parameters, server-side scoring, and fallback error handling
+
+### Recent Changes (Previous)
 - **Structure**: Migrated to standard Next.js `src/` directory structure
 - **Code Organization**: Separated utilities (`src/utils/`), constants (`src/constants/`), UI components (`src/components/ui/`), and feature components (`src/components/features/`)
 - **Import Optimization**: Updated all import paths and added index files for cleaner imports

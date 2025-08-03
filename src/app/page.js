@@ -1,17 +1,39 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/ui/Header';
 import DonateModal from '@/components/ui/DonateModal';
+import UsernameModal from '@/components/ui/UsernameModal';
 import { locationNames } from '@/constants/locations';
 
 export default function Home() {
   const [showDonateModal, setShowDonateModal] = useState(false);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [username, setUsername] = useState('');
   const router = useRouter();
 
+  useEffect(() => {
+    const cachedUsername = localStorage.getItem('vigeoguessr_username');
+    if (cachedUsername) {
+      setUsername(cachedUsername);
+    } else {
+      setShowUsernameModal(true);
+    }
+  }, []);
+
+  const handleUsernameSubmit = (newUsername) => {
+    setUsername(newUsername);
+    localStorage.setItem('vigeoguessr_username', newUsername);
+    setShowUsernameModal(false);
+  };
+
   const startGame = (location) => {
-    router.push(`/game?location=${location}`);
+    if (!username) {
+      setShowUsernameModal(true);
+      return;
+    }
+    router.push(`/game?location=${location}&username=${encodeURIComponent(username)}`);
   };
 
   return (
@@ -62,6 +84,11 @@ export default function Home() {
       <DonateModal
         isOpen={showDonateModal}
         onClose={() => setShowDonateModal(false)}
+      />
+
+      <UsernameModal
+        isOpen={showUsernameModal}
+        onSubmit={handleUsernameSubmit}
       />
     </div>
   );

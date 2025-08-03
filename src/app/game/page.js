@@ -8,7 +8,7 @@ import PanoViewer from '@/components/features/PanoViewer';
 import GameMap from '@/components/features/GameMap';
 import ResultModal from '@/components/features/ResultModal';
 import { getRandomMapillaryImage } from '@/utils/mapillary';
-import { calculateDistance } from '@/utils/distance';
+import { calculateDistance, calculatePoints } from '@/utils/distance';
 
 function GamePageContent() {
   const router = useRouter();
@@ -18,9 +18,11 @@ function GamePageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [imageData, setImageData] = useState(null);
   const [choiceLocation, setChoiceLocation] = useState('HN');
+  const [username, setUsername] = useState('');
   const [trueLocation, setTrueLocation] = useState([0, 0]);
   const [guessLocation, setGuessLocation] = useState([0, 0]);
   const [distance, setDistance] = useState(0);
+  const [points, setPoints] = useState(0);
   const [hasGuessed, setHasGuessed] = useState(false);
 
   const loadRandomImage = useCallback(async () => {
@@ -42,10 +44,23 @@ function GamePageContent() {
 
   useEffect(() => {
     const location = searchParams.get('location');
+    const usernameParam = searchParams.get('username');
+    
     if (location) {
       setChoiceLocation(location);
     }
-  }, [searchParams]);
+    
+    if (usernameParam) {
+      setUsername(decodeURIComponent(usernameParam));
+    } else {
+      const cachedUsername = localStorage.getItem('vigeoguessr_username');
+      if (cachedUsername) {
+        setUsername(cachedUsername);
+      } else {
+        router.push('/');
+      }
+    }
+  }, [searchParams, router]);
 
   useEffect(() => {
     loadRandomImage();
@@ -62,24 +77,61 @@ function GamePageContent() {
     setTrueLocation([lat, lng]);
   }, []);
 
-  const handleSubmit = () => {
-    if (!hasGuessed) return;
+  const handleSubmit = async () => {
+    if (!hasGuessed || !username || !imageData) return;
 
-    const dist = calculateDistance(
-      guessLocation[0],
-      guessLocation[1],
-      trueLocation[0],
-      trueLocation[1]
-    );
+    try {
+      const response = await fetch('/api/scoring', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          guessLat: guessLocation[0],
+          guessLng: guessLocation[1],
+          trueLat: trueLocation[0],
+          trueLng: trueLocation[1],
+          imageId: imageData.id
+        })
+      });
 
-    setDistance(dist);
-    setShowResultModal(true);
+      if (response.ok) {
+        const result = await response.json();
+        setDistance(result.distance);
+        setPoints(result.points);
+        setShowResultModal(true);
+      } else {
+        console.error('Failed to submit score');
+        const fallbackDistance = calculateDistance(
+          guessLocation[0],
+          guessLocation[1],
+          trueLocation[0],
+          trueLocation[1]
+        );
+        setDistance(fallbackDistance);
+        setPoints(calculatePoints(fallbackDistance));
+        setShowResultModal(true);
+      }
+    } catch (error) {
+      console.error('Error submitting score:', error);
+      const fallbackDistance = calculateDistance(
+        guessLocation[0],
+        guessLocation[1],
+        trueLocation[0],
+        trueLocation[1]
+      );
+      setDistance(fallbackDistance);
+      setPoints(calculatePoints(fallbackDistance));
+      setShowResultModal(true);
+    }
   };
 
   const handleNextRound = () => {
     setShowResultModal(false);
     setHasGuessed(false);
     setDistance(0);
+    setPoints(0);
     loadRandomImage();
   };
 
@@ -143,8 +195,10 @@ function GamePageContent() {
       <ResultModal
         isOpen={showResultModal}
         distance={distance}
+        points={points}
         trueLocation={trueLocation}
         guessLocation={guessLocation}
+        imageData={imageData}
         onNextRound={handleNextRound}
       />
 

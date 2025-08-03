@@ -30,3 +30,19 @@ export function calculateDistance(lat1, lon1, lat2, lon2) {
   
   return parseFloat(dist.toFixed(1));
 }
+
+/**
+ * Calculates points based on distance (in meters)
+ * @param {number} distanceMeters - Distance in meters
+ * @returns {number} Points (1-5 scale)
+ */
+export function calculatePoints(distanceMeters) {
+  const distanceKm = distanceMeters / 1000;
+  
+  if (distanceKm > 1) return 0;
+  if (distanceKm > 0.5) return 1;  
+  if (distanceKm > 0.2) return 2;
+  if (distanceKm > 0.1) return 3;
+  if (distanceKm > 0.05) return 4;
+  return 5;
+}
