@@ -37,7 +37,7 @@
 <body>
     <div class="main-container">
         <div class="background-layer"></div>
-        
+
         <div class="content-wrapper">
             <div class="gradient-overlay">
                 <header class="header">
@@ -53,74 +53,74 @@
                     </div>
 
                 </header>
-                
+
                 <div class="game-section">
                     <div class="score-header">
-                        <button class="back-btn" onclick="goBack()"> 
+                        <button class="back-btn" onclick="goBack()">
                             <div class="diamond-icon" style="background-image: url('../assets/images/back.svg');"></div>
                         </button>
                     </div>
                     <div class="game-content">
                         <div class="pano" id="pano">
                         </div>
-                        
+
                         <div class="right-panel">
                             <div class="disclaimer" id="map"></div>
                             <button class="check-btn" id="check" disabled onclick="check()">
                                 <div class="check-text">SUBMIT</div>
-                            </button>                      
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        
+
+
     </div>
 
 
 
 
-    
+
     <script>
         function startGame(location ) {
             // Redirect to the game page
             window.location.href = 'game.html?location=' + location;
             // You can also add any additional logic here, like initializing the game state
         }
-        
+
         function bridgeToL2() {
             alert('Bridging to Layer 2...');
             // Bridge functionality would go here
         }
-        
+
         function navigate(page) {
             console.log('Navigating to:', page);
             // Navigation logic would go here
         }
-        
+
         function openSocial(platform) {
             console.log('Opening social platform:', platform);
             // Social media links would go here
         }
-        
+
         // Add interactive hover effects
         document.addEventListener('DOMContentLoaded', function() {
             const buttons = document.querySelectorAll('button, .connect-wallet');
-            
+
             buttons.forEach(button => {
                 button.addEventListener('mouseenter', function() {
                     this.style.transform = 'scale(1.05)';
                 });
-                
+
                 button.addEventListener('mouseleave', function() {
                     this.style.transform = 'scale(1)';
                 });
-                
+
                 button.addEventListener('mousedown', function() {
                     this.style.transform = 'scale(0.95)';
                 });
-                
+
                 button.addEventListener('mouseup', function() {
                     this.style.transform = 'scale(1.05)';
                 });
@@ -154,6 +154,10 @@
             <img class ='qr' src="QR.png" style="width:320px; height:auto;"/>
             <button onclick="closeDonate()" class='next-btn'><div class="next-text">CLOSE</div></button>
         </div>
+    </div>
+    <div style="text-align: center">
+      This site is powered by
+      <a href="https://www.netlify.com" target="_blank">Netlify</a>
     </div>
 </body>
 </html>
