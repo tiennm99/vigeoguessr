@@ -22,7 +22,7 @@ VIGEOGUESSR is a Vietnamese geography guessing game built with Next.js 15 and Re
 - **Testing**: Jest + React Testing Library
 - **Linting**: ESLint with `@typescript-eslint`
 - **Formatting**: Prettier
-- **Package Manager**: pnpm (preferred)
+- **Package Manager**: npm
 
 ## 📂 Project Structure
 
@@ -73,19 +73,19 @@ Key configuration files in the project root:
 - Tailwind CSS with PostCSS configuration
 - shadcn/ui: `npx shadcn-ui@latest init`
 - React Query: `<QueryClientProvider>` in app/layout.tsx
-- MapLibre GL JS: `pnpm add maplibre-gl`
-- MapillaryJS: `pnpm add mapillary-js`
+- MapLibre GL JS: `npm install maplibre-gl`
+- MapillaryJS: `npm install mapillary-js`
 - TypeScript configuration with `tsconfig.json`
 - ESLint with TypeScript support
 
 ## ⚙️ Development Commands
 
-- **Dev server**: `pnpm dev` - Start development server on localhost:3000
-- **Build**: `pnpm build` - Build for production
-- **Start**: `pnpm start` - Start production server
-- **Lint**: `pnpm lint` - Run ESLint to check code quality
-- **Test**: `pnpm test` - Run Jest + RTL tests
-- **Format**: `pnpm format` - Format code with Prettier
+- **Dev server**: `npm run dev` - Start development server on localhost:3000
+- **Build**: `npm run build` - Build for production
+- **Start**: `npm start` - Start production server
+- **Lint**: `npm run lint` - Run ESLint to check code quality
+- **Test**: `npm test` - Run Jest + RTL tests
+- **Format**: `npm run format` - Format code with Prettier
 
 ## 🧠 React Query Architecture
 
@@ -296,7 +296,7 @@ Game state managed at page level with React hooks:
 
 ### Modern Tech Stack Migration (Latest)
 - **Language**: TypeScript (`^5.7.3`) with strict typing, interfaces, and complete migration
-- **Package Manager**: Migrated from npm to pnpm with updated scripts (dev, build, start, lint, format, test, type-check)
+- **Package Manager**: npm, with scripts dev, build, start, lint, format, test, type-check
 - **Tailwind CSS**: Complete migration from custom CSS to Tailwind utilities with custom design tokens matching game theme  
 - **shadcn/ui**: Installed and configured with utility functions, ready for UI component replacements
 - **React Query**: Added TanStack Query with QueryClientProvider in layout and custom hooks (`useMapillary`, `useScoring`)
@@ -313,7 +313,7 @@ Game state managed at page level with React hooks:
 - ✅ **Styling**: Tailwind CSS with custom game design tokens
 - ✅ **Data Fetching**: React Query hooks for API management
 - ✅ **Testing**: Jest + RTL with TypeScript and library mocks
-- ✅ **Package Management**: pnpm with modern scripts
+- ✅ **Package Management**: npm with modern scripts
 - ✅ **App Router**: All app router files migrated to TypeScript (.tsx)
 - ✅ **API Routes**: All API routes migrated to TypeScript (.ts)
 - ✅ **Service Layer**: All service files migrated with proper TypeScript interfaces
